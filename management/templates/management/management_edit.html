@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Dirección</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'management_list_active' %}">Dirección</a></li>
+                    <li class="breadcrumb-item active">Editar Dirección</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action={% url 'management_edit_save' %} method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="management_id" value="{{management_data.id}}">              
+                        <div class="row mb-2">
+                            <div class="col-md-3 mb-3">
+                                <label for="management_name">Nombre Dirección:</label>
+                                <input type="text" class="form-control" id="management_name" name="management_name" value="{{ management_data.management_name }}" placeholder="ej: Dirección Seguridad Ciudadana" required/>
+                            </div>                       
+                            <div class="col-md-3 mb-3">
+                                <label for="management_in_charge">Encargado Dirección:</label>
+                                <input type="text" class="form-control" id="management_in_charge" name="management_in_charge" value="{{ management_data.management_in_charge }}" placeholder="ej: Maria Duarte" required/>        
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="management_in_charge_mail">Correo Encargado:</label>
+                                <input type="email" class="form-control" id="management_in_charge_mail" name="management_in_charge_mail" value="{{ management_data.management_in_charge_mail }}" placeholder="ej: correo@dominio.cl" required/>
+                            </div>                                                                            
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="d-none d-lg-inline text-end mt-4">
+                                        <button type="submit" class="btn btn-primary"style="width: 120px; height: 40px;">Editar</button>
+                                        <a href="{% url 'management_list_active' %}" class="btn btn-primary" style="width: 120px; height: 40px;">Volver</a>
+                                    </div>
+                                    <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+                                    <div class="d-lg-none mt-3 text-center">
+                                        <button class="btn btn-primary d-inline-block mx-2 mb-2" type="submit">Editar</button>
+                                        <a class="btn btn-primary d-inline-block mx-2 mb-2" href="{% url 'management_list_active' %}">Volver</a>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>                                                               
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+{% endblock %}

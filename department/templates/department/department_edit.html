@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Departamento</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'department_list_active' %}">Departamento</a></li>
+                    <li class="breadcrumb-item active">Editar Departamento</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form action={% url 'department_edit_save' %} method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="department_id" value="{{department_data.id}}">          
+                        <input type="hidden" name=# value=#>      
+                        <div class="row mb-2">
+                            <div class="col-md-3 mb-3">
+                                <label for="deparment_name" class="form-label">Nombre departamento:</label>
+                                <input type="text" class="form-control" name="deparment_name" value="{{ department_data.deparment_name }}" placeholder="ej: Departamento Seguridad Ciudadana" required>
+                            </div>
+                        
+                            <div class="col-md-3 mb-3">
+                                <label for="deparment_in_charge" class="form-label">Encargado departamento:</label>
+                                <input type="text" class="form-control" id="deparment_in_charge" name="deparment_in_charge" value="{{ department_data.deparment_in_charge }}" placeholder="ej: Ana Gonzalez" required/>
+                            </div>
+                        
+                            <div class="col-md-3 mb-3">
+                                <label for="deparment_in_charge_mail" class="form-label">Correo encargado:</label>
+                                <input type="email" class="form-control" id="deparment_in_charge_mail" name="deparment_in_charge_mail" value="{{ department_data.deparment_in_charge_mail }}" placeholder="ej: nombre@corre.cl" required/>
+                            </div>
+                        
+                            <div class="col-md-3 mb-3">
+                                {% if flow == 1 %}
+                                    <label for="management_id" class="form-label">Dirección encargado:</label>
+                                    <select class="form-control" id="management_id" name="management_id" required>
+                                        <option value="">Seleccione una dirección</option>
+                                        {% for ml in management_list %}
+                                            <option value="{{ ml.id }}" {% if ml.id == department_data.management_id %}selected{% endif %}>{{ ml.management_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="d-none d-lg-inline text-end mt-4">
+                                        <button type="submit" class="btn btn-primary"style="width: 120px; height: 40px;">Editar</button>
+                                        <a href="{% url 'department_list_active' %}" class="btn btn-primary" style="width: 120px; height: 40px;">Volver</a>
+                                    </div>
+                                    <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+                                    <div class="d-lg-none mt-3 text-center">
+                                        <button class="btn btn-primary d-inline-block mx-2 mb-2" type="submit">Editar</button>
+                                        <a class="btn btn-primary d-inline-block mx-2 mb-2" href="{% url 'department_list_active' %}">Volver</a>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div>                                                               
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".btn-delete-field").on("click", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+
+    <title>UrbanSensor</title>
+
+    <!-- fuentes -->
+    <link href="{% static 'registration/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+    <!-- styles -->
+    <link href="{% static '/registration/css/style.min.css' %}" rel="stylesheet">
+    <!-- <link href="{% static 'vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet"> -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <!--  API de Google Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=TU_API_KEY&libraries=places" defer></script>
+
+
+
+</head>
+
+<style>
+    #map {
+        height: 300px;
+        width: 100%;
+    }
+</style>
+
+<body id="page-top">
+
+    <!-- body -->
+    <div id="wrapper">
+
+    
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'index' %}">
+                <div class="sidebar-brand-text mx-3">UrbanSensor</div>
+            </a>
+
+        
+            <hr class="sidebar-divider my-0">
+
+        
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span></a>
+            </li>
+
+        
+            <hr class="sidebar-divider">
+
+
+        
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-target="#collapseTwo"
+                    aria-expanded="true" aria-controls="collapseTwo">
+                    <i class="fas fa-fw fa-cog"></i>
+                    <span>Cuentas</span>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-target="#collapseUtilities"
+                    aria-expanded="true" aria-controls="collapseUtilities">
+                    <i class="fas fa-poll-h"></i>
+                    <span>Solicitudes</span>
+                </a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="#" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-users"></i>
+                    <span>Territoriales</span>
+                </a>
+            </li>
+
+            
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'poll_main' %}">
+                    <i class="fas fa-th-list"></i>
+                    <span>Encuesta</span></a>
+            </li>
+
+            
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <i class="fas fa-tools"></i>
+                    <span>Ajustes</span></a>
+            </li>
+
+            
+            <hr class="sidebar-divider d-none d-md-block">
+
+          
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+        
+
+        
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main -->
+            <div id="content">
+
+            
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                
+                    
+                    <div class="navbar-brand">
+                        <i class="fas fa-sun"></i> Buenos días administrador
+                    </div>
+                
+                    <ul class="navbar-nav ml-auto">
+                
+                        <div class="topbar-divider d-none d-sm-block"></div>
+                
+                
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Municipalidad</span>
+                                <img class="img-profile rounded-circle" src="{% static '/registration/img/undraw_profile.svg' %}"> 
+                            </a>
+                    
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Salir
+                                </a>
+                            </div>
+                        </li>
+                
+                    </ul>
+                </nav>
+        
+                <!-- Encuesta -->
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Encuesta</h3>
+                                <ul class="breadcrumb">
+                                <li class="breadcrumb-item active">Inicio</li>
+                                <li class="breadcrumb-item"><a href="{% url 'poll_main' %}">Encuestas</a></li>
+                                <li class="breadcrumb-item active">Editar Encuesta</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="{% url 'poll_add_end' %}" method="post">
+                                        {% csrf_token %}          
+                                        <input type="hidden" name="poll_id" value="{{poll_data.id}}">      
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Titulo</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.name}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                                <div class="form-group">
+                                                    <select name="incident" class="form-control" required>
+                                                        <option value="">Seleccione un tipo</option>
+                                                        {%for i in incidents %}
+                                                            <option value="{{i.id}}" {% if i.id == poll_data.incident_id %}selected{% endif %}>{{i.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>         
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title ">Informacion personal</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'name_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Nombre vecino</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'name_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="name_neighbor" value="Juan Perez">
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'mail_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'mail_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="email" class="form-control" name="mail_neighbor" value="correo@gmail.com">
+                                                    </div>
+                                                {% endif %}                                        
+                                            </div>
+                                            <div class="col-md-6">    
+                                                {% if 'pohne_neighbor' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Telefono</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'pohne_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="pohne_neighbor" value="+569 12349876">
+                                                    </div>  
+                                                {% endif %}                                                                          
+                                            </div>
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Informacion incidente</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_classification' in poll_fields_standard_array %}   
+                                                    <div class="form-group">
+                                                        <label>Clasificacion incidencia</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_classification' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="incidence_classification" value="Clasificacion incidencia">
+                                                    </div>
+                                                {% endif %}     
+                                                {% if 'incidence_priority' in poll_fields_standard_array %}                                       
+                                                    <div class="form-group">
+                                                        <label>Prioridad</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_priority' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="incidence_priority" value="Prioridad">
+                                                    </div>
+                                                {% endif %}                                          
+                                                <div class="form-group">
+                                                    <label>Ubicación</label>
+                                                    <input type="text" class="form-control" name="incidence_location" value="Ubicación">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if 'incidence_description' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Descripcion</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_description' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <textarea rows="8" cols="5" class="form-control" name="incidence_description" placeholder="Descripcion"></textarea>
+                                                    </div>
+                                                {% endif %}                                           
+                                            </div>
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Informacion multimedia</h4>
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_image' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Imagen</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_image' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="incidence_image" value="imagen">
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                            <div class="col-md-6">      
+                                                {% if 'incidence_video' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Video</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_video' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="incidence_video" value="video">
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_audio' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Audio</label>
+                                                        <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_audio' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                        <input type="text" class="form-control" name="incidence_audio" value="Audio">
+                                                    </div>
+                                                {% endif %}                                             
+                                            </div>
+                                        </div>
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Otra</h4>
+                                            {% for o in poll_fields_other %}
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group">
+                                                            <label>{{o.label}}</label>
+                                                            <a href="{% url 'poll_fields_delete' poll_data.id o.name %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                                                            <input type="text" class="form-control" name="{{o.name}}" value="{{o.placeholder}}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        {% endif %}                                         
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="text-end mt-4">
+                                                        <button type="submit" class="btn btn-primary">Activar</button>
+                                                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#crearCampoModal">
+                                                            Crear Nuevo Campo
+                                                        </button>
+                                                    </div>
+                                                </div> 
+                                            </div>
+                                        </div>                                                               
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; UrbanSensor 2023</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Salir</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.</div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <a class="btn btn-primary" href="login.html">Cerrar session</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JavaScript-->
+    <script src="{% static '/registration/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- plugin JavaScript-->
+    <script src="{% static '/registration/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+    <!-- scripts -->
+    <script src="{% static '/registration/js/sb-admin-2.min.js' %}"></script>
+
+    <script src="{% static '/registration/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+
+    <!-- <script src="{% static '/registration/js/demo/datatables-demo.js' %}"></script> -->
+
+
+    <div class="modal fade" id="crearCampoModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoModalLabel">Crear Nuevo Campo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{% url 'poll_new' poll_id=poll_data.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <label for="nuevoCampo">Nombre del Nuevo Campo</label>
+                        <input type="text" class="form-control" name="nuevo_campo_nombre" id="nuevoCampo">
+                        <label for="labelCampo">Etiqueta del Campo</label>
+                        <input type="text" class="form-control" name="nuevo_campo_label" id="labelCampo">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" id="guardarCampo">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+<!-- Agrega esta sección en tu HTML -->
+<script>
+$(document).ready(function() {
+    var camposCreados = [];
+
+    function agregarCampo(name, label, placeholder) {
+        var nuevoCampoHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>${label}</label>
+                        <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="${name}" placeholder="${placeholder}" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        $(".informacion-personal-form").append(nuevoCampoHTML);
+    }
+
+    $("#guardarCampo").on("click", function() {
+        var nuevoCampoNombre = $("#nuevoCampo").val();
+        var nuevoCampoLabel = $("#labelCampo").val();
+        var nuevoCampoPlaceholder = $("#placeholderCampo").val();
+
+        if (nuevoCampoNombre && nuevoCampoLabel && nuevoCampoPlaceholder) {
+            camposCreados.push({
+                name: nuevoCampoNombre,
+                label: nuevoCampoLabel,
+                placeholder: nuevoCampoPlaceholder
+            });
+            agregarCampo(nuevoCampoNombre, nuevoCampoLabel, nuevoCampoPlaceholder);
+
+            $("#nuevoCampo").val("");
+            $("#labelCampo").val("");
+            $("#placeholderCampo").val("");
+
+            $.post(
+                "{% url 'poll_edit' poll_id=poll_data.id %}",
+                {
+                    nuevo_campo_nombre: nuevoCampoNombre,
+                    nuevo_campo_label: nuevoCampoLabel,
+                    nuevo_campo_placeholder: nuevoCampoPlaceholder,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                },
+                function(data) {
+                    // Manejar la respuesta del servidor si es necesario
+                }
+            );
+
+            $("#crearCampoModal").modal("hide");
+        }
+    });
+
+    $(".informacion-personal-form").on("click", ".btn-delete-field", function() {
+        $(this).closest(".form-group").remove();
+    });
+});
+</script>
+
+
+<script>
+    let map;
+    let marker;
+
+    function openMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 0, lng: 0 },
+            zoom: 15
+        });
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: true
+        });
+
+        // Abre la ventana de selección de ubicación
+        const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('locationInput'),
+            { placeIdOnly: true }
+        );
+
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                console.error("Ubicación no válida");
+                return;
+            }
+
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+
+            // Guarda la ubicación en el campo oculto
+            document.getElementById('selectedLocation').value = JSON.stringify({
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            });
+        });
+
+        // Muestra el modal con el mapa
+        $('#mapModal').modal('show');
+    }
+
+    $('#mapModal').on('hidden.bs.modal', function () {
+        google.maps.event.trigger(map, 'resize');
+    });
+</script>
+
+</body>
+
+</html>

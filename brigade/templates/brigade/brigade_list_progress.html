@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+{% extends 'core/base_brigade.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="container-fluid">
+    <!-- Tarjetas -->
+    <div class="row">
+        
+    <!-- Encuestas Respondidas -->
+    <div class="col-md-4 mb-4 card respondidas">
+        <a href="{% url 'cuadrilla_main' %}" class="text-decoration-none text-dark">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Solicitudes Derivadas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_delivery_count}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-inbox fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Encuestas Derivadas -->
+    <div class="col-md-4 mb-4 card respondidas">
+        <a href="{% url 'brigade_list_progress' %}" class="text-decoration-none text-dark">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Solicitudes En Proceso
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_in_progress_count}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-spinner fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Encuestas Finalizadas -->
+    <div class="col-md-4 mb-4 card respondidas">
+        <a href="{% url 'brigade_list_finish' %}" class="text-decoration-none text-dark">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Solicitudes Finalizadas
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_end_count}}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+</div>
+</div>
+
+
+
+
+<!-- Encuesta -->
+<div class="container-fluid">
+
+    <!-- Datos de encuesta -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Solicitudes en Proceso</h3>
+
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Solicitudes en Proceso</h6>
+
+            </div>
+
+            <div class="d-flex justify-content-end align-items-center">
+                <div style="margin-left: 20px;" id="btn-container" class="d-none d-lg-inline">
+                    <a class="btn btn-primary" style="min-width: 80px; width: 130px;" href="{% url 'report_list_progress' %}">Reporte Excel</a>
+                </div>
+
+                <div style="margin-left: 20px;" id="btn-container" class="d-none d-lg-inline">
+                    <a class="btn btn-primary" style="min-width: 80px; width: 130px;" href="{% url 'cuadrilla_main' %}">Nuevas</a>
+                </div>
+
+                <div style="margin-left: 20px;" id="btn-container" class="d-none d-lg-inline">
+                    <a class="btn btn-primary" style="min-width: 80px; width: 130px;" href="{% url 'brigade_list_finish' %}">Finalizadas</a>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card-body">
+            <div class="d-flex justify-content-end align-items-center mb-3">       
+                <div class="me-2 flex-grow-1" style="max-width: 250px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar"
+                        style="width: 100%; height: 35px;">
+                </div>
+        
+                <span class="input-group-text" style="height: 35px;" id="searchIcon"><i class="fas fa-search"></i></span>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Solicitada el</th>
+                            <th>Derivada el</th>
+                            <th>Iniciada el</th>
+                            <th>Tipo solicitud</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for re in request_activate_list %}
+                        <tr class="incident-row" data-incident="{{ pe.incident }}">
+                            <td class="incident-name">{{ re.request_name }}</td>
+                            <td class="incident-name">{{ re.request_date }}</td>
+                            <td class="incident-type">{{ re.request_delivery }}</td>
+                            <td class="incident-type">{{ re.request_accept }}</td>
+                            <td class="incident-type">{{ re.poll.incident.name }}</td>
+                            <td class="text-end">
+                                {% if pe.id in completed_poll_ids %}
+                                <!-- Si la encuesta está completada, utiliza un estilo diferente -->
+                                <a href="{% url 'brigade_poll_view_progress' re.id %}"
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-eye me-1"></i>
+                                </a>
+                                
+                                <!-- Imprimir información para verificar -->
+                                <p>Encuesta respondida: {{ pe.id }}</p>
+                                {% else %}
+                                <!-- Si la encuesta no ha sido respondida, usa el color del botón original -->
+                                <a href="{% url 'brigade_poll_view_progress' re.id %}"
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-eye me-1"></i>
+                                </a>
+                                
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+</div>
+
+    <!-- Script para filtrar por tipo de incidencia -->
+    <script>
+        $(document).ready(function () {
+            $('#typeFilter').change(function () {
+                var selectedType = $(this).val();
+
+                // Oculta todas las filas
+                $('.incident-row').hide();
+
+                // Muestra solo las filas correspondientes al tipo seleccionado
+                if (selectedType !== '') {
+                    $('.incident-row[data-incident="' + selectedType + '"]').show();
+                } else {
+                    // Si se selecciona "Todos", muestra todas las filas
+                    $('.incident-row').show();
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#searchInput, #typeFilter').on('input change', function () {
+                var searchName = $('#searchInput').val().toLowerCase();
+                var selectedType = $('#typeFilter').val().toLowerCase();
+
+                // Oculta todas las filas
+                $('.incident-row').hide();
+
+                // Filtra las filas por nombre y tipo de incidencia
+                $('.incident-row').each(function () {
+                    var incidentName = $(this).find('.incident-name').text().toLowerCase();
+                    var incidentType = $(this).find('.incident-type').text().toLowerCase();
+
+                    if ((incidentName.includes(searchName) || searchName === '') && (incidentType.includes(selectedType) || selectedType === '')) {
+                        $(this).show();
+                    }
+                });
+            });
+        });
+    </script>
+
+
+    {% if messages %}
+    {% for me in messages %}
+    <script>
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "success",
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtén todas las tarjetas
+            const cards = document.querySelectorAll('.card');
+    
+            // Agrega la clase de resaltado a la segunda tarjeta por defecto
+            cards[2].classList.add('card-selected');
+    
+
+        });
+    </script>
+    
+    
+    
+
+
+
+
+
+
+</body>
+
+</html>
+{% endblock %}

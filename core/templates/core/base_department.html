@@ -1,0 +1,333 @@
+{% load static %}
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>UrbanSensor</title>
+
+    <!-- Fuentes -->
+    <link href="{% static 'registration/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+
+    <!-- Estilos -->
+    <link href="{% static '/registration/css/style.min.css' %}" rel="stylesheet">
+
+    <style>
+        .mb-3 button,
+        .btn-editar,
+        .btn-ver,
+        .btn-desactivar,
+        .btn-activar {
+            width: 60px;
+            /* Ancho deseado */
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-tooltip {
+            margin-left: 8px;
+            /* Ajusta el valor según sea necesario */
+        }
+        
+
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+        <!-- Buscador -->
+        <script src="{% static '/registration/js/search.js' %}"></script>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center"
+                href="{% url 'departamento_main' %}">
+                <div class="sidebar-brand-text mx-3">UrbanSensor</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+            <li class="nav-item {% if '/departamento_main' in request.path %}active{% endif %}">
+                <a class="nav-link" href="{% url 'departamento_main' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            
+            <hr class="sidebar-divider my-0">
+
+            <li class="nav-item {% if  '/department/department_main/' in request.path or '/department/department_view/' in request.path or '/department/department_in_progress/' in request.path or '/department/department_finish/' in request.path %}active{% endif %}">
+                <a class="nav-link collapsed" href="{% url 'department_main' %}" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-sitemap"></i>
+                    <span>Solicitudes</span>
+                </a>
+            </li>
+            
+            <hr class="sidebar-divider my-0">
+            
+            <li class="nav-item {% if  '/department/department_view_profile/' in request.path %}active{% endif %}">
+                <a class="nav-link" href="{% url 'department_view_profile' %}">
+                    <i class="fas fa-user"></i>
+                    <span>Perfil</span>
+                </a>
+            </li>
+
+            <!--
+                <li class="nav-item {% if request.path == '/dashboard_admin' %}active{% endif %}">
+                    <a class="nav-link" href="{% url 'territorial_list' %}">
+                        <i class="fas fa-address-book"></i>
+                        <span>Territorial</span></a>
+                </li>
+                -->
+            <hr class="sidebar-divider my-0">
+
+
+<hr class="sidebar-divider my-0">
+<!-- Cerrar Sesión (Solo para dispositivos móviles) -->
+<li class="nav-item d-md-none">
+    <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Cerrar Sesión</span>
+    </a>
+</li>
+
+
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main -->
+            <div id="content">
+                <!-- barra navegacion superior -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <div class="navbar-brand">
+
+                        
+
+                    </div>
+
+                    <ul class="navbar-nav ml-auto">
+
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+
+                    <!-- informacion de usuario -->
+<li class="nav-item dropdown no-arrow d-none d-md-block">
+    <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {% if user.is_authenticated %}
+        <span>
+            <img class="img-profile rounded-circle" src="{% static '/registration/img/undraw_profile.svg' %}">
+            <span class="text-gray-600 small">{{ user.first_name }}</span>
+        </span>
+        {% else %}
+        {% endif %}
+    </a>
+    <!-- Dropdown - User Information -->
+    <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+        <a class="dropdown-item" href="{% url 'department_view_profile' %}">
+            <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+            Perfil
+        </a>
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+            <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+            Salir
+        </a>
+    </div>
+</li>
+
+
+                    </ul>
+                </nav>
+
+                <!-- fin barra navegacion superior-->
+                {% block content %}
+                
+                {% endblock %} 
+                
+
+
+            </div>
+        </div>
+        
+
+    </div>
+
+    <!-- Bootstrap y otros scripts -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="{% static '/registration/js/sb-admin-2.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="{% static '/registration/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Botón Scroll -->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Salir</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar
+                    su sesión
+                    actual. </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url 'logout' %}">Cerrar sesión</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+                $(document).ready(function () {
+            var hora = new Date().getHours();
+            var saludo, icono;
+            if (hora >= 6 && hora < 12) {
+                saludo = "Buenos días";
+                icono = '<i class="fas fa-sun"></i>';
+            } else if (hora >= 12 && hora < 18) {
+                saludo = "Buenas tardes";
+                icono = '<i class="fas fa-sun"></i>';
+            } else {
+                saludo = "Buenas noches";
+                icono = '<i class="fas fa-moon"></i>';
+            }
+            $(".navbar-brand").html(icono + ' ' + saludo + ', <span class="font-weight-bold">{{ user.first_name }}</span>');
+        });
+
+    </script>
+
+    <!-- Generador Sweet Alert-->
+    {% if messages %}
+    {% for me in messages %}
+    <script>
+        {% if me.tags == 'success' %}
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "success",
+        });
+        {% elif me.tags == 'error' %}
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "error",
+        });
+        {% elif me.tags == 'warning' %}
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "warning",
+        });
+        {% endif %}
+    </script>
+    {% endfor %}
+    {% endif %}
+    <script>
+        console.log('URL actual:', window.location.pathname);
+        console.log('Cookies:', document.cookie);
+    
+        $(document).ready(function () {
+            // Verifica si el ancho de la ventana es menor que 768px (puedes ajustar este valor según sea necesario)
+            if (window.innerWidth < 768) {
+                // URL de la página que debe tener la barra lateral abierta
+                var openSidebarUrl = '/dashboard_admin';
+    
+                // Obtén la URL actual
+                var currentUrl = window.location.pathname;
+    
+                // Verifica si la cookie 'sidebarCollapsed' está presente
+                var sidebarCollapsed = $.cookie('sidebarCollapsed');
+    
+                // Si la cookie no está presente o si la URL no coincide con la URL de apertura de la barra lateral,
+                // establece el valor predeterminado como 'true' para colapsar la barra lateral
+                if (sidebarCollapsed === undefined || currentUrl !== openSidebarUrl) {
+                    sidebarCollapsed = 'true';
+                    $.cookie('sidebarCollapsed', sidebarCollapsed);
+                }
+    
+                // Aplica el estado de la barra lateral
+                setSidebarState(sidebarCollapsed);
+    
+                // Dentro de la función setSidebarState
+                console.log('Setting sidebar state to:', sidebarCollapsed);
+    
+                // Maneja el clic del botón de alternar sidebar
+                $('#sidebarToggleTop').on('click', function () {
+                    var newSidebarState = toggleSidebarState();
+                    setSidebarState(newSidebarState);
+                });
+    
+                function toggleSidebarState() {
+                    // Cambia el estado actual de la barra lateral
+                    var currentState = $.cookie('sidebarCollapsed');
+                    var newState = (currentState === 'true') ? 'false' : 'true';
+                    $.cookie('sidebarCollapsed', newState);
+                    return newState;
+                }
+    
+                function setSidebarState(state) {
+                    // Aplica el estado de la barra lateral
+                    var body = $('body');
+                    if (state === 'true') {
+                        body.addClass('sidebar-toggled');
+                        $('#accordionSidebar').addClass('toggled');
+                    } else {
+                        body.removeClass('sidebar-toggled');
+                        $('#accordionSidebar').removeClass('toggled');
+                    }
+                }
+            }
+        });
+    </script>
+    
+
+</body>
+
+
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Módulo de Configuración
+                    <span style="margin-left: 10px;">
+                        {% if manuals_list %}
+                        <a href="{{ manuals_list.manual_path }}" download>
+                            <i class="fas fa-file-pdf fa-lg" title="Descargar Manual"></i>
+                        </a>
+                        {% endif %}
+                    </span>
+                </h3>
+                <h6 class="m-0 font-weight-bold text-primary">Información Tipo de Aplicación y Logo</h6>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre Municipalidad</th>
+                            <th>Tipo Aplicación</th>
+                            <th>Logo municipalidad</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{config_data.app_name}}</td>
+                            <td>
+                                {% if config_data.app_type == 1 %}
+                                Flujo Departamentos
+                                {% endif %}
+                                {% if config_data.app_type == 2 %}
+                                Flujo Direcciones
+                                {% endif %}
+                            </td>
+                            <td>
+                                <img src="{% static 'registration/img/logo_mun.png' %}" alt=""
+                                    class="img-thumbnail rounded border" style="max-width: 100px; max-height: 100px;">
+                            </td>
+                            <td class="text-end" style="white-space: nowrap;">
+                                <a href="{% url 'administrator_logo_edit' %}"
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-search fa-lg me-1"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Administrar Manuales -->
+    <div class="card shadow mb-6">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Modulo Manuales
+                    <span style="margin-left: 10px;">
+
+                    </span>
+                </h3>
+                <h6 class="m-0 font-weight-bold text-primary">Subir Manuales</h6>
+            </div>
+        </div>
+
+        <!-- <form method="post" enctype="multipart/form-data" action="manual_upload"> -->
+            <div class="card-body">
+                <div class="row">
+                        <div class="col-md-6">
+                            <div class="card shadow special-card">
+                                <!-- Tarjeta 1 -->
+                                <form method="post" enctype="multipart/form-data" action="{% url 'manual_upload_direccion' %}">
+                                    {% csrf_token %}
+                                    <div class="card-body">
+                                        
+                                        <div class="font-weight-bold text-primary">Manual Dirección</div>
+                                        <p>Proporciona instrucciones detalladas de manejo de este módulo.</p>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="myfiledireccion">
+                                                    <input type="file" name="myfiledireccion" id="myfiledireccion" onchange="mostrarBotondireccion()">
+                                                </label>
+                                                <span id="filenamedireccion" class="small text-muted"></span>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-md-12" id="botonSubirArchivoDireccion" style="display: none;">
+                                                <button class="form-control" type="submit" style="background-color: #134982; color: white; border-color: #134982;"
+                                                    onmouseover="this.style.backgroundColor='green'" onmouseout="this.style.backgroundColor='#134982'">Subir Archivo</button>
+                                            </div>
+                                        </div>
+                                        <br>
+                                        {% if uploaded_file_url_direccion %}
+                                        <p>Archivo subido en: <a href="{{uploaded_file_url_direccion}}">{{uploaded_file_url_direccion}}</a></p>
+                                        {% endif %}
+                                    </div>
+                                </form>
+
+                                <script>
+                                    function mostrarBotondireccion() {
+                                        var inputFile = document.getElementById('myfiledireccion');
+                                        var botonSubirArchivo = document.getElementById('botonSubirArchivoDireccion');
+                                        if (inputFile.files.length > 0) {
+                                            botonSubirArchivo.style.display = 'block';
+                                        } else {
+                                            botonSubirArchivo.style.display = 'none';
+                                        }
+                                    }
+                                </script>
+                            
+                            </div>
+                        </div>
+
+                    <div class="col-md-6">
+                        <div class="card shadow special-card">
+                            <!-- Tarjeta 2 -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'manual_upload_departamento' %}">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="font-weight-bold text-primary">Manual Departamento</div>
+                                    <p>Proporciona instrucciones detalladas de manejo de este módulo.</p>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="myfiledepartamento" >
+                                                <input type="file" name="myfiledepartamento" id="myfiledepartamento" onchange="mostrarBotondepartamento()">
+                                            </label>
+                                            <span id="filenamedepartamento" class="small text-muted"></span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12" id="botonSubirArchivoDepartamento" style="display: none;">
+                                            <button  class="form-control" type="submit"
+                                                style="background-color: #134982; color: white; border-color: #134982;"
+                                                onmouseover="this.style.backgroundColor='green'"
+                                                onmouseout="this.style.backgroundColor='#134982'">Subir Archivo</button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% if uploaded_file_url_departamento %}
+                                    <p>Archivo subido en: <a href="{{uploaded_file_url_departamento}}">{{uploaded_file_url_departamento}}</a></p>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            <script>
+                                function mostrarBotondepartamento() {
+                                    var inputFile = document.getElementById('myfiledepartamento');
+                                    var botonSubirArchivo = document.getElementById('botonSubirArchivoDepartamento');
+                                    if (inputFile.files.length > 0) {
+                                        botonSubirArchivo.style.display = 'block';
+                                    } else {
+                                        botonSubirArchivo.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="margin-top: 20px;">
+                        <div class="card shadow special-card">
+                            <!-- Tarjeta 3 -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'manual_upload_incidente' %}">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="font-weight-bold text-primary">Manual Incidente</div>
+                                    <p>Proporciona instrucciones detalladas de manejo de este módulo.</p>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="myfileincidente">
+                                                <input type="file" name="myfileincidente" id="myfileincidente" onchange="mostrarBotonIncidente()">
+                                            </label>
+                                            <span id="filenameincidente" class="small text-muted"></span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12" id="botonSubirArchivoIncidente" style="display: none;">
+                                            <button  class="form-control" type="submit"
+                                                style="background-color: #134982; color: white; border-color: #134982;"
+                                                onmouseover="this.style.backgroundColor='green'"
+                                                onmouseout="this.style.backgroundColor='#134982'">Subir Archivo</button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% if uploaded_file_url_incidente%}
+                                    <p>Archivo subido en: <a href="{{uploaded_file_url_incidente}}">{{uploaded_file_url_incidente}}</a></p>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            <script>
+                                function mostrarBotonIncidente() {
+                                    var inputFile = document.getElementById('myfileincidente');
+                                    var botonSubirArchivo = document.getElementById('botonSubirArchivoIncidente');
+                                    if (inputFile.files.length > 0) {
+                                        botonSubirArchivo.style.display = 'block';
+                                    } else {
+                                        botonSubirArchivo.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="margin-top: 20px;">
+                        <div class="card shadow special-card">
+                            <!-- Tarjeta 4 -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'manual_upload_encuesta' %}">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="font-weight-bold text-primary">Manual Encuesta</div>
+                                    <p>Proporciona instrucciones detalladas de manejo de este módulo.</p>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="myfileencuesta">
+                                                <input type="file" name="myfileencuesta" id="myfileencuesta" onchange="mostrarBotonEncuestas()">
+                                            </label>
+                                            <span id="filenameencuesta" class="small text-muted"></span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12"  id="botonSubirArchivoEncuesta" style="display: none;">
+                                            <button  class="form-control" type="submit"
+                                                style="background-color: #134982; color: white; border-color: #134982;"
+                                                onmouseover="this.style.backgroundColor='green'"
+                                                onmouseout="this.style.backgroundColor='#134982'">Subir Archivo</button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% if uploaded_file_url_encuesta %}
+                                    <p>Archivo subido en: <a href="{{uploaded_file_url_encuesta}}">{{uploaded_file_url_encuesta}}</a></p>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            <script>
+                                function mostrarBotonEncuestas() {
+                                    var inputFile = document.getElementById('myfileencuesta');
+                                    var botonSubirArchivo = document.getElementById('botonSubirArchivoEncuesta');
+                                    if (inputFile.files.length > 0) {
+                                        botonSubirArchivo.style.display = 'block';
+                                    } else {
+                                        botonSubirArchivo.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6" style="margin-top: 20px;">
+                        <div class="card shadow special-card">
+                            <!-- Tarjeta 5 -->
+                            <form method="post" enctype="multipart/form-data" action="{% url 'manual_upload_configuracion' %}">
+                                {% csrf_token %}
+                                <div class="card-body">
+                                    <div class="font-weight-bold text-primary">Manual Configuración</div>
+                                    <p>Proporciona instrucciones detalladas de manejo de este módulo.</p>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <label for="myfileconfiguracion">
+                                                <input type="file" name="myfileconfiguracion" id="myfileconfiguracion" onchange="mostrarBotonConfiguracion()">
+                                            </label>
+                                            <span id="filenameconfiguracion" class="small text-muted"></span>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    <div class="row">
+                                        <div class="col-md-12"  id="botonSubirArchivoConfiguracion" style="display: none;">
+                                            <button  class="form-control" type="submit"
+                                                style="background-color: #134982; color: white; border-color: #134982;"
+                                                onmouseover="this.style.backgroundColor='green'"
+                                                onmouseout="this.style.backgroundColor='#134982'">Subir Archivo</button>
+                                        </div>
+                                    </div>
+                                    <br>
+                                    {% if uploaded_file_url_configuracion%}
+                                    <p>Archivo subido en: <a href="{{uploaded_file_url_configuracion}}">{{uploaded_file_url_configuracion}}</a></p>
+                                    {% endif %}
+                                </div>
+                            </form>
+                            <script>
+                                function mostrarBotonConfiguracion() {
+                                    var inputFile = document.getElementById('myfileconfiguracion');
+                                    var botonSubirArchivo = document.getElementById('botonSubirArchivoConfiguracion');
+                                    if (inputFile.files.length > 0) {
+                                        botonSubirArchivo.style.display = 'block';
+                                    } else {
+                                        botonSubirArchivo.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <script>
+            // Mostrar el nombre del archivo seleccionado
+            document.getElementById("myfiledireccion").addEventListener("change", function () {
+                var filename = this.files[0].name;
+                document.getElementById("filenamedireccion").innerText = "Nombre Archivo Seleccionado: " + filename;
+            });
+        </script>
+        <script>
+            // Mostrar el nombre del archivo seleccionado
+            document.getElementById("myfiledepartamento").addEventListener("change", function () {
+                var filename = this.files[0].name;
+                document.getElementById("filenamedepartamento").innerText = "Nombre Archivo Seleccionado: " + filename;
+            });
+        </script>
+        <script>
+            // Mostrar el nombre del archivo seleccionado
+            document.getElementById("myfileincidente").addEventListener("change", function () {
+                var filename = this.files[0].name;
+                document.getElementById("filenameincidente").innerText = "Nombre Archivo Seleccionado: " + filename;
+            });
+        </script>
+        <script>
+            // Mostrar el nombre del archivo seleccionado
+            document.getElementById("myfileencuesta").addEventListener("change", function () {
+                var filename = this.files[0].name;
+                document.getElementById("filenameencuesta").innerText = "Nombre Archivo Seleccionado: " + filename;
+            });
+        </script>
+        <script>
+            // Mostrar el nombre del archivo seleccionado
+            document.getElementById("myfileconfiguracion").addEventListener("change", function () {
+                var filename = this.files[0].name;
+                document.getElementById("filenameconfiguracion").innerText = "Nombre Archivo Seleccionado: " + filename;
+            });
+        </script>
+    </div>
+
+</div>
+
+<br><br>
+<div class="container">
+    <div class="row">
+        <div class="container-fluid">
+            <!-- Paginación -->
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-end mt-3">
+                    {% if department_activate_list.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ department_activate_list.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">
+                            Página {{ department_activate_list.number }} de {{ department_activate_list.paginator.num_pages }}.
+                        </span>
+                    </li>
+
+                    {% if department_activate_list.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ department_activate_list.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ department_activate_list.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+
+</body>
+
+</html>
+{% endblock %}

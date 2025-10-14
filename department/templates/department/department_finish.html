@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+{% extends 'core/base_department.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+            </div>
+        </div> 
+    <!-- Lista de direcciones -->   
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                
+                    <h3 class="m-0 font-weight-bold text-primary">Módulo de Solicitudes                   
+                        <span style="margin-left: 10px;">
+                        <a href="#" download>
+                            <i class="fas fa-file-pdf fa-lg" title="Descargar Manual"></i>
+                        </a>
+                    </span>
+                    </h3>
+    
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Encuestas Finalizadas</h6>
+            </div>
+            <!-- Botón para dispositivos grandes (lg) y más grandes -->
+            <div class="row">
+                <div class="col">
+                    <div style="margin-left: 1px;" class="d-none d-lg-inline">
+                        <a class="btn btn-primary" style="min-width: 80px; width: 180px;" href="{% url 'department_main' %}">Enviadas</a>
+                    </div>
+                </div>
+                <div class="col">
+                    <div style="margin-left: 1px;" class="d-none d-lg-inline">
+                        <a class="btn btn-primary" style="min-width: 80px; width: 180px;" href="{% url 'department_in_progress' %}">En Proceso</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+                            <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+            <div class="d-lg-none mt-3">
+                <a class="btn btn-primary d-block mx-auto mb-2"style="min-width: 80px; width: 280px;" href="{% url 'department_main' %}">Enviadas</a>
+                <a class="btn btn-primary d-block mx-auto"     style="min-width: 80px; width: 280px;" href="{% url 'department_in_progress' %}">En Proceso</a>
+            </div>
+                            
+
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="input-group" style="width: 200px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="searchIcon"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th width="20%">Nombre</th>
+                                <th width="15%">Tipo de Incidencia</th>
+                                <th width="15%">Prioridad</th>
+                                <th width="15%">Fecha</th>
+                                <th width="15%">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Contenido de la lista de direcciones -->
+                            
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td class="text-end " style="white-space: nowrap;">
+                                        
+                                        <a href="{% url 'department_view' %}" title="Editar"   class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 w-sm-auto btn-editar" >
+                                            <i class="fas fa-eye me-1"></i> 
+                                        </a>
+                                        
+                                    </td>
+
+                                </tr>
+                              
+                            </tbody>
+                        </table>
+                        <!-- Paginación -->
+                            <nav aria-label="Page navigation">
+                                <ul class="pagination justify-content-end mt-3">
+                                    {% if department_activate_list.has_previous %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page=1" aria-label="First">
+                                                <span aria-hidden="true">&laquo;&laquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{department_activate_list.previous_page_number }}" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    <li class="page-item disabled">
+                                        <span class="page-link">
+                                            Página {{ department_activate_list.number }} de {{ department_activate_list.paginator.num_pages }}.
+                                        </span>
+                                    </li>
+
+                                    {% if department_activate_list.has_next %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ department_activate_list.next_page_number }}" aria-label="Next">
+                                                <span aria-hidden="true">&raquo;</span>
+                                            </a>
+                                        </li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="?page={{ department_activate_list.paginator.num_pages }}" aria-label="Last">
+                                                <span aria-hidden="true">&raquo;&raquo;</span>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Advertencia -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Dirección</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Desea desactivar esta Encuesta?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="blockButton" type="button" class="btn btn-danger" onclick="#">Desactivar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+<script>// Define la URL
+    var baseUrl = '#';
+</script>
+<script src="{% static '/registration/js/activate.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row d-flex justify-content-center">
+        <!-- Tarjeta direcciones creadas -->
+        <div class="col-xl-4 col-md-5 mb-5">
+            <a href="{% url 'management_list_active' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Direcciones creadas</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{direction_count}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-sitemap fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- Tarjeta departamentos creados -->
+        <div class="col-xl-4 col-md-5 mb-5">
+            <a href="{% url 'department_list_active' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Departamentos Creados</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{department_count}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-building fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <!-- Tarjeta incidencias registradas-->
+        <div class="col-xl-4 col-md-5 mb-5">
+            <a href="{% url 'incident_list_active' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-info shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                    Incidencias
+                                    Registradas
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{request_all_count}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- fin tarjetas -->
+    <div class="row">
+        <!-- Gráfico de Frecuencia de Solicitudes -->
+        <div class="col-lg-7 col-md-7 col-sm-7">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-6" style="padding-left: 12px; padding-right: 5px; padding-bottom: 15px;">
+                    <div class="card mr-1">
+                        <div class="card-header">
+                            <h5 class="m-0 font-weight-bold text-primary">Frecuencia de Solicitudes</h5>
+                        </div>
+                        <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+                            <canvas id="combinedRepeatedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Tabla de Usuarios Ausentes -->
+                <div class="col-lg-6 col-md-6 col-sm-6" style="padding-left: 5px; padding-right: 17px; padding-bottom: 15px;">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="m-0 font-weight-bold text-primary">Usuarios Ausentes</h5>
+                            <a href="{% url 'administrator_users_main' %}" class="btn btn-primary btn-sm">Ver</a>
+                        </div>
+                        <div class="card-body" style="max-height: 240px; overflow-y: auto;">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Nombre de Usuario</th>
+                                        <th>Último Inicio de Sesión</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for usuario in usuarios_ausentes %}
+                                    <tr>
+                                        <td>{{ usuario.first_name }} {{ usuario.last_name }}</td>
+                                        <td>{{ usuario.last_login|date:"d M Y H:i" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2">No hay usuarios ausentes.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Gráficos de Usuarios Más Efectivos -->
+            <div class="col-lg-12 col-md-12 col-sm-12" style="padding-left: 1px; padding-right: 1px;">
+                <div class="card mr-1">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-primary">Usuarios Más Efectivos</h5>
+                        <div class="tabs">
+                            <button class="btn btn-primary btn-sm" onclick="showGraph('graph1', 'lineChart')">Territorial</button>
+                            <button class="btn btn-primary btn-sm" onclick="showGraph('graph2', 'lineChartCuadrilla')">Cuadrilla</button>
+                            <button class="btn btn-primary btn-sm" onclick="showGraph('graph3', 'lineChartDireccion')">Dirección</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="graph1" class="graph-container">
+                            <canvas id="lineChart" height="80px"></canvas>
+                        </div>
+                        <div id="graph2" class="graph-container" style="display: none;">
+                            <canvas id="lineChartCuadrilla" height="80px"></canvas>
+                        </div>
+                        <div id="graph3" class="graph-container" style="display: none;">
+                            <canvas id="lineChartDireccion" height="80px"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Georeferencia -->
+        <div class="col-lg-5 col-md-5 col-sm-5" style="padding-left: 5px;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-primary">Georeferencia de Municipalidad</h5>
+                </div>
+                <div class="card-body">
+                    <iframe
+                        src="{{kepler_url}}"
+                        width="100%" height="552px" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <hr color="#b0ace2"/>
+
+    <div class="row">
+        <!-- Columna 2: Georeferencia -->
+        <div class="col-lg-6 col-md-6 mb-6" style="padding-right: 0px; padding-bottom: 1px;">
+            <div class="card mr-3">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-primary">Solicitudes con mayor demora</h5>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="max-height: 350px; overflow-y: auto;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Incidencia</th>
+                                    <th>Cuadrilla</th>
+                                    <th>Inicio</th>
+                                    <!-- <th>Término</th> -->
+                                    <th>Días</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for in in incidencias_demoradas %}
+                                    <tr>
+                                        <td>{{ in.poll.name }}</td>
+                                        <td>{{ in.brigade.user.first_name }} {{ in.brigade.user.last_name }}</td>
+                                        <td>{{ in.request_delivery|date:"d-m-Y" }}</td>
+                                        <!-- <td>{{ in.request_close|date:"d-m-Y" }}</td> -->
+                                        <td>{{ in.tiempo_demorado.days}}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-left: 9px;">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-primary">Promedio de finalización por Cuadrilla</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="barChart" height="123px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr color="#b0ace2"/>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6" style="padding-right: 15px;">
+            <!-- Tabla debajo del gráfico circular -->
+            <div class="card mt-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 font-weight-bold text-primary">Estado de Solicitudes por Departamento</h5>
+                        <button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#incidenciasModal">Ver</button>
+                    </div>
+                <div class="card-body">
+                    <div style="max-height: 350px; overflow-y: auto;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Departamento</th>
+                                    <th class="text-center">Iniciada</th>
+                                    <th class="text-center">Derivada</th>
+                                    <th class="text-center">Proceso</th>
+                                    <th class="text-center">Finalizada</th>
+                                    <th class="text-center">Cerrada</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for departamento in departamentos %}
+                                <tr>
+                                    <td>{{ departamento.name }}</td>
+                                    <td class="text-center">{{ departamento.iniciadas}}</td>
+                                    <td class="text-center">{{ departamento.derivadas}}</td>
+                                    <td class="text-center">{{ departamento.en_proceso}}</td>
+                                    <td class="text-center">{{ departamento.finalizadas }}</td>
+                                    <td class="text-center">{{ departamento.cerradas }}</td>
+                                    <td class="text-center">{{ departamento.total }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal para mostrar incidencias -->
+            <div class="modal fade" id="incidenciasModal" tabindex="-1" role="dialog" aria-labelledby="incidenciasModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="incidenciasModalLabel">Detalles de Solicitudes</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Pestañas -->
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="iniciada-tab" data-toggle="tab" href="#iniciada" role="tab" aria-controls="iniciada" aria-selected="true">Iniciada</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="derivada-tab" data-toggle="tab" href="#derivada" role="tab" aria-controls="derivada" aria-selected="false">Derivada</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="proceso-tab" data-toggle="tab" href="#proceso" role="tab" aria-controls="proceso" aria-selected="false">Proceso</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="finalizada-tab" data-toggle="tab" href="#finalizada" role="tab" aria-controls="finalizada" aria-selected="false">Finalizada</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="cerrada-tab" data-toggle="tab" href="#cerrada" role="tab" aria-controls="cerrada" aria-selected="false">Cerrada</a>
+                                </li>
+                            </ul>
+                            <!-- Contenido de las pestañas -->
+                            <div class="tab-content mt-2">
+                                <div class="tab-pane fade show active" id="iniciada" role="tabpanel" aria-labelledby="iniciada-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <th>Incidencia</th>
+                                                    <th>Creada</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modal-table-body-iniciada">
+                                                {% for incidencia in listas_estado.0.iniciadas %}
+                                                <tr>
+                                                    <td>{{ incidencia.deparment.deparment_name }}</td>
+                                                    <td>{{ incidencia.poll.name }}</td>
+                                                    <td>{{ incidencia.created|date:"d-m-Y" }}</td>
+                                                    <td>
+                                                        <a class="btn btn-info" href="{% url 'department_view_read_only_admin' incidencia.id %}">Ver</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="derivada" role="tabpanel" aria-labelledby="derivada-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <th>Incidencia</th>
+                                                    <th>Derivada</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modal-table-body-derivada">
+                                                {% for incidencia in listas_estado.0.derivadas %}
+                                                <tr>
+                                                    <td>{{ incidencia.deparment.deparment_name }}</td>
+                                                    <td>{{ incidencia.poll.name }}</td>
+                                                    <td>{{ incidencia.request_delivery }}</td> <!-- Asumiendo que tienes un campo de fecha de derivación -->
+                                                    <td>
+                                                        <a class="btn btn-info" href="{% url 'department_view_read_only_admin' incidencia.id %}">Ver</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="proceso" role="tabpanel" aria-labelledby="proceso-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <th>Incidencia</th>
+                                                    <th>Aceptada</th>
+                                                    <th>Cuadrilla</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modal-table-body-proceso">
+                                                {% for incidencia in listas_estado.0.en_proceso %}
+                                                <tr>
+                                                    <td>{{ incidencia.deparment.deparment_name }}</td>
+                                                    <td>{{ incidencia.poll.name }}</td>
+                                                    <td>{{ incidencia.request_accept }}</td> 
+                                                    <td>{{ incidencia.brigade.user.first_name }} {{ incidencia.brigade.user.last_name }}</td> 
+                                                    <td>
+                                                        <a class="btn btn-info" href="{% url 'department_view_read_only_admin' incidencia.id %}">Ver</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="finalizada" role="tabpanel" aria-labelledby="finalizada-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <th>Incidencia</th>
+                                                    <th>Finalizada</th>
+                                                    <th>Cuadrilla</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modal-table-body-finalizada">
+                                                {% for incidencia in listas_estado.0.finalizadas %}
+                                                <tr>
+                                                    <td>{{ incidencia.deparment.deparment_name }}</td>
+                                                    <td>{{ incidencia.poll.name }}</td>
+                                                    <td>{{ incidencia.request_finish }}</td> <!-- Asumiendo que tienes un campo de fecha de finalización -->
+                                                    <td>{{ incidencia.brigade.user.first_name }} {{ incidencia.brigade.user.last_name }}</td>
+                                                    <td>
+                                                        <a class="btn btn-info" href="{% url 'department_view_read_only_admin' incidencia.id %}">Ver</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="cerrada" role="tabpanel" aria-labelledby="cerrada-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Departamento</th>
+                                                    <th>Incidencia</th>
+                                                    <th>Cerrada</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="modal-table-body-cerrada">
+                                                {% for incidencia in listas_estado.0.cerradas %}
+                                                <tr>
+                                                    <td>{{ incidencia.deparment.deparment_name }}</td>
+                                                    <td>{{ incidencia.poll.name }}</td>
+                                                    <td>{{ incidencia.request_close }}</td> <!-- Asumiendo que tienes un campo de fecha de cierre -->
+                                                    <td>
+                                                        <a class="btn btn-info" href="{% url 'department_view_read_only_admin' incidencia.id %}">Ver</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-12 col-sm-12" style="padding-left: 10px;">
+            <div class="card mt-3">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 font-weight-bold text-primary">Comparación Solicitudes Derivadas/Resueltas</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="derivadosResueltosChart" height="106px"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+        
+
+    
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+
+    
+
+
+    <script>
+        function showGraph(graphId, canvasId) {
+            // Ocultar todas las gráficas
+            document.getElementById('graph1').style.display = 'none';
+            document.getElementById('graph2').style.display = 'none';
+            document.getElementById('graph3').style.display = 'none';
+
+            // Mostrar la gráfica seleccionada
+            document.getElementById(graphId).style.display = 'block';
+
+            // Renderizar el gráfico correspondiente si aún no se ha creado
+            const canvas = document.getElementById(canvasId);
+            if (!canvas.dataset.initialized) {
+                renderChart(canvasId); // Llama a la función para crear el gráfico
+                canvas.dataset.initialized = true; // Evita que el gráfico se cree múltiples veces
+            }
+        }
+
+        function renderChart(canvasId) {
+            if (canvasId === 'lineChart') {
+                const months = {{ months|safe }};
+                const userActivity = {{ user_activity|safe }};
+                const colors = ['#FF6384', '#36A2EB', '#FFCE56', '#33FF48', '#E97C0E'];
+
+                const datasets = Object.keys(userActivity).map((username, index) => ({
+                    label: username,
+                    data: userActivity[username],
+                    borderColor: colors[index % colors.length],
+                    fill: false,
+                    tension: 0.1  // Suavidad de la línea
+                }));
+
+                const lineCtx1 = document.getElementById('lineChart').getContext('2d');
+
+                new Chart(lineCtx1, {
+                    type: 'line',
+                    data: {
+                        labels: months,
+                        datasets: datasets
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: 'Actividad de Usuarios (Últimos 5 Meses)'
+                            }
+                        }
+                    }
+                });
+
+        } else if (canvasId === 'lineChartCuadrilla') {
+            const monthsCuadrillas = {{ months|safe }};
+            const brigadeActivity = {{ brigade_activity|safe }};
+            const colorsCuadrillas = ['#66FF66', '#36A2EB', '#FFCE56', '#FF6666', '#CC00CC'];
+
+            const datasetsCuadrillas = Object.keys(brigadeActivity).map((brigadeName, index) => ({
+                label: brigadeName,
+                data: brigadeActivity[brigadeName],
+                borderColor: colorsCuadrillas[index % colorsCuadrillas.length],
+                fill: false,
+                tension: 0.1  // Suavidad de la línea
+            }));
+
+            const lineCtx2 = document.getElementById('lineChartCuadrilla').getContext('2d');
+
+            new Chart(lineCtx2, {
+                type: 'line',
+                data: {
+                    labels: monthsCuadrillas,
+                    datasets: datasetsCuadrillas
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Incidencias Finalizadas por Cuadrillas (Últimos 5 Meses)'
+                        }
+                    }
+                }
+            });
+        } else if (canvasId === 'lineChartDireccion'){
+            const monthsDireccion = {{ months|safe }};
+            const managementActivity = {{ management_activity|safe }};
+            const colorsDireccion = ['#FF6666', '#66FF66', '#36A2EB', '#FFCE56', '#CC00CC']
+
+            const datasetsDireccion = Object.keys(managementActivity).map((managementName, index) => ({
+                label: managementName,
+                data: managementActivity[managementName],
+                borderColor: colorsDireccion[index % colorsDireccion.length],
+                fill: false,
+                tension: 0.1
+            }));
+
+            const lineCtx3 = document.getElementById('lineChartDireccion').getContext('2d');
+
+            new Chart(lineCtx3, {
+                type: 'line',
+                data: {
+                    labels: monthsDireccion,
+                    datasets: datasetsDireccion
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Incidencias Derivadas por Dirección (Últimos 5 Meses)'
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        showGraph('graph1', 'lineChart');  // Cargar la primera gráfica por defecto
+    });
+
+
+    // Datos de incidencias menos repetidas
+    var leastRepeatedLabels = {{ least_repeated_labels|safe }};
+    var leastRepeatedData = {{ least_repeated_data|safe }};
+
+    // Datos de incidencias más repetidas
+    const mostRepeatedLabels = {{ most_repeated_labels|safe }};
+    const mostRepeatedData = {{ most_repeated_data|safe }};
+
+    // Función para abreviar etiquetas
+    function abbreviateLabel(label) {
+        const lowerLabel = label.toLowerCase(); // Convertir temporalmente a minúsculas para comparar
+        const prefix = "dirección de "; // Prefijo en minúsculas para una comparación consistente
+
+        // Verificar y eliminar el prefijo en cualquiera de sus variantes
+        if (lowerLabel.startsWith(prefix)) {
+            return label.slice(13); // Eliminar los primeros 16 caracteres (longitud del prefijo)
+        }
+        return label; // Si tiene 2 palabras o menos, dejar igual
+    }
+
+    // Abreviar las etiquetas
+    var leastRepeatedLabelsAbbreviated = leastRepeatedLabels.map(label => abbreviateLabel(label));
+    var mostRepeatedLabelsAbbreviated = mostRepeatedLabels.map(label => abbreviateLabel(label));
+
+    // Combinar etiquetas
+    const combinedLabels = leastRepeatedLabelsAbbreviated.concat(mostRepeatedLabelsAbbreviated);
+
+    // Crear datasets separados para menos repetidas y más repetidas
+    const datasets = [
+        {
+            label: 'Más Repetidas',
+            data: Array(leastRepeatedData.length).fill(0).concat(mostRepeatedData),
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Menos Repetidas',
+            data: leastRepeatedData.concat(Array(mostRepeatedData.length).fill(0)),
+            backgroundColor: 'rgba(255, 99, 132, 0.6)', // Color de fondo de las barras menos repetidas
+            borderColor: 'rgba(255, 99, 132, 1)', // Color del borde de las barras menos repetidas
+            borderWidth: 1
+        }
+    ];
+
+    // Crear el gráfico
+    const ctx = document.getElementById('combinedRepeatedChart').getContext('2d');
+    const combinedRepeatedChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: combinedLabels,
+            datasets: datasets // Utilizar datasets creados
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Definir datos predefinidos directamente en el script
+    var brigadeLabels = {{ brigade_labels|safe }};
+    var avgDays = {{ avg_days|safe }};
+
+    // Configuración del gráfico de barras
+    var timectx = document.getElementById('barChart').getContext('2d');
+    var myBarChart = new Chart(timectx, {
+        type: 'bar',
+        data: {
+            labels: brigadeLabels, // Nombres de las cuadrillas
+            datasets: [{
+                label: 'Promedio de días de finalización',
+                data: avgDays, // Promedios de días
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Promedio de Días de Finalización por Cuadrilla'
+                }
+            }
+        }
+    });
+
+    var linectx4 = document.getElementById('derivadosResueltosChart').getContext('2d');
+    var chart = new Chart(linectx4, {
+        type: 'line',
+        data: {
+            labels: [ {% for mes in meses %} "{{ mes }}", {% endfor %} ], // Etiquetas de los meses
+            datasets: [
+                {
+                    label: 'Derivadas',
+                    data: [ {% for valor in casos_derivados %} {{ valor }}, {% endfor %} ],
+                    borderColor: 'rgba(255, 162, 235, 1)',
+                    backgroundColor: 'rgba(255, 162, 235, 0.2)',
+                    borderWidth: 2
+                },
+                {
+                    label: 'Resueltas',
+                    data: [ {% for valor in casos_resueltos %} {{ valor }}, {% endfor %} ],
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Número de Casos'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Meses'
+                    }
+                }
+            }
+        }
+    });
+
+    </script>
+
+    
+
+    <!-- maps-->
+    <!-- <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Georeferencia de Municipalidad</h5>
+                </div>
+                <div class="card-body">
+                    <iframe
+                        src="{{kepler_url}}"
+                        width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"></iframe>
+                </div>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+<hr color="#b0ace2"/>
+<!-- fin main -->
+
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+
+</div>
+
+</div>
+
+<script src="{% static '/registration/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+
+<script src="{% static '/registration/vendor/chart.js/Chart.min.js' %}"></script>
+
+<script src="{% static '/registration/js/demo/chart-area-demo.js' %}"></script>
+<script src="{% static '/registration/js/demo/chart-pie-demo.js' %}"></script>
+
+</body>
+
+</html>
+{% endblock %}

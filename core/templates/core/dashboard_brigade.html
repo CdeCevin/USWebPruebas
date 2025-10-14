@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+{% extends 'core/base_brigade.html' %}
+{%load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Encuestas Derivadas -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'cuadrilla_main' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                    Solicitudes Derivadas
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_delivery_count}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-inbox fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Encuestas En Proceso -->
+        <div class="col-md-4 mb-4 card">
+            <a href="{% url 'brigade_list_progress' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                    Solicitudes En Proceso
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_in_progress_count}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-spinner fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Encuestas Finalizadas -->
+        <div class="col-md-4 mb-4">
+            <a href="{% url 'brigade_list_finish' %}" class="text-decoration-none text-dark">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    Solicitudes Finalizadas
+                                </div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{request_end_count}}</div>
+                            </div>
+                            <div class="col-auto">
+                                <i class="fas fa-check fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="m-0 font-weight-bold text-primary">Incidencias</h5>
+                </div>
+                <div class="card-body">
+                    <h6>En Proceso</h6>
+                    <div style="max-height: 230px; overflow-y: auto;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tipo solicitud</th>
+                                    <th>Iniciada el</th>
+                                    <th>Días</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for re in incident_list %}
+                                    <tr>
+                                        <td>{{ re.poll.incident.name }}</td>
+                                        <td>{{ re.request_accept  }}</td>
+                                        <td>{{ re.days_since_accept }}</td>
+                                        <td>
+                                            <!-- Botón de acción -->
+                                            <a href="{% url 'brigade_poll_view_progress' re.id %}" class="btn btn-sm btn-primary mb-2 btn-ver">Ver</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No hay incidencias en proceso.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h6>Derivadas</h6>
+                    <div style="max-height: 230px; overflow-y: auto;">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Tipo solicitud</th>
+                                    <th>Derivada el</th>
+                                    <th>Días</th>
+                                    <th>Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for re in derived_list %}
+                                    <tr>
+                                        <td>{{ re.poll.incident.name }}</td>
+                                        <td>{{ re.request_delivery }}</td>
+                                        <td>{{ re.days_since_delivery }}</td>
+                                        <td>
+                                            <a href="{% url 'brigade_request_view_delivery' re.id %}" class="btn btn-sm btn-primary mb-2 btn-ver">Ver</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No hay incidencias recientes.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+    <!-- maps -->
+    <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="m-0 font-weight-bold text-primary">Georeferencia de Municipalidad</h5>
+            </div>
+            <div class="card-body">
+                <iframe
+                    src="{{kepler_url}}"
+                    width="100%" height="500" style="border:0;" allowfullscreen="" loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<hr color="#b0ace2"/>
+
+
+{% endblock %}

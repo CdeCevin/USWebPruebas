@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+{% extends 'core/base_territorial.html' %}
+{%load static %}
+{% block content %}
+
+<div class="container-fluid">
+
+    <!-- Datos de encuesta -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Módulo de Encuestas</h3>
+
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Encuestas Finalizadas</h6>
+            </div>
+            <!-- Botón para dispositivos grandes (lg) y más grandes -->
+<div style="margin-left: 1px;" id="btn-container" class="d-none d-lg-inline d-md-flex">
+    <a class="btn btn-primary mx-2" style="min-width: 80px; width: 180px;" href="{% url 'report_list_polls_territorial_desactive' %}">Reportes Excel</a>
+    <a class="btn btn-primary mx-2" style="min-width: 80px; width: 180px;" href=# onclick="openSelectionModal()">Responder</a>
+    <a class="btn btn-primary mx-2" style="min-width: 80px; width: 180px;" href="{% url 'territorial_list' %}">Enviadas</a>
+    <a class="btn btn-primary mx-2" style="min-width: 80px; width: 180px;"
+        href="{% url 'territorial_list_inprogress' %}">En Proceso</a> 
+
+
+</div>
+</div>
+
+<!-- Botón para dispositivos pequeños (md) y más pequeños -->
+<div class="d-lg-none mt-3 text-center">
+    <a class="btn btn-primary d-block mx-auto mb-3 text-center" href="{% url 'report_list_polls_territorial_desactive' %}">Reportes Excel</a>
+    <a class="btn btn-primary d-block mx-auto mb-3 text-center" href=# onclick="openSelectionModal()">Responder</a>
+    <a class="btn btn-primary d-block mx-auto mb-3 text-center" href="{% url 'territorial_list' %}">Enviadas</a>
+    <a class="btn btn-primary d-block mx-auto mb-3 text-center"
+        href="{% url 'territorial_list_inprogress' %}">En Proceso</a>
+
+
+</div>
+
+        <div class="card-body">
+            <div class="d-flex justify-content-end align-items-center mb-3">
+                <div class="me-2 flex-grow-1" style="max-width: 250px;">
+                    <select id="typeFilter" class="form-select form-select-sm custom-select"
+                        style="width: 100%; height: 35px; margin-bottom: 1px;">
+                        <option value="">Todos</option>
+                        {% for incident_name in incident_list %}
+                        <option value="{{ incident_name }}">{{ incident_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+        
+                <div class="me-2 flex-grow-1" style="max-width: 250px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar"
+                        style="width: 100%; height: 35px;">
+                </div>
+        
+                <span class="input-group-text" style="height: 35px;" id="searchIcon"><i class="fas fa-search"></i></span>
+            </div>
+
+
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo Incidencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pe in poll_activate_list %}
+                        <tr class="incident-row" data-incident="{{ pe.incident }}">
+                            <td class="incident-name">{{ pe.name }}</td>
+                            <td class="incident-type">{{ pe.incident }}</td>
+                            <td class="text-end">
+                                {% if pe.id in completed_poll_ids %}
+                                <!-- Si la encuesta está completada, utiliza un estilo diferente -->
+                                <a href=""
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-search me-1"></i> Ver
+                                </a>
+
+                                <!-- Imprimir información para verificar -->
+                                <p>Encuesta respondida: {{ pe.id }}</p>
+                                {% else %}
+                                <!-- Si la encuesta no ha sido respondida, usa el color del botón original -->
+                                <a href=""
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-eye fa-lg me-1"></i>
+                                </a>
+
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Paginación -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end mt-3">
+        {% if poll_activate_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ poll_activate_list.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="page-item disabled">
+            <span class="page-link">
+                Página {{ poll_activate_list.number }} de {{ poll_activate_list.paginator.num_pages }}.
+            </span>
+        </li>
+
+        {% if poll_activate_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ poll_activate_list.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ poll_activate_list.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Modal de Advertencia -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Encuesta</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Desea desactivar esta encuesta?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="blockButton" type="button" class="btn btn-danger"
+                    onclick="desactivarEncuesta()">Desactivar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+</div>
+
+<script>
+
+
+    function mostrarModal(elemento) {
+        // Obtiene el ID de la encuesta del botón
+        var pollId = $(elemento).data('poll-id');
+
+        // Pasa el ID al modal
+        $('#myModal').data('poll-id', pollId);
+
+        // Muestra el modal
+        $('#myModal').modal('show');
+
+        // Actualiza la URL del botón Bloquear con el ID de la encuesta
+        var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+        console.log('URL de bloqueo al hacer clic:', blockUrl);
+        $('#blockButton').attr('href', blockUrl);
+    }
+
+    $(document).ready(function () {
+        $('#myModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var pollId = button.data('poll-id');
+            var modal = $(this);
+
+            // Verifica que pollId tenga un valor
+            if (pollId !== undefined) {
+                // Actualiza la URL del botón Bloquear con el ID de la encuesta
+                var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+                console.log('URL de bloqueo al hacer clic:', blockUrl);
+                modal.find('#blockButton').attr('href', blockUrl);
+            }
+        });
+    });
+</script>
+
+
+<!-- Script para filtrar por tipo de incidencia -->
+<script>
+    $(document).ready(function () {
+        $('#typeFilter').change(function () {
+            var selectedType = $(this).val();
+
+            // Oculta todas las filas
+            $('.incident-row').hide();
+
+            // Muestra solo las filas correspondientes al tipo seleccionado
+            if (selectedType !== '') {
+                $('.incident-row[data-incident="' + selectedType + '"]').show();
+            } else {
+                // Si se selecciona "Todos", muestra todas las filas
+                $('.incident-row').show();
+            }
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#searchInput, #typeFilter').on('input change', function () {
+            var searchName = $('#searchInput').val().toLowerCase();
+            var selectedType = $('#typeFilter').val().toLowerCase();
+
+            // Oculta todas las filas
+            $('.incident-row').hide();
+
+            // Filtra las filas por nombre y tipo de incidencia
+            $('.incident-row').each(function () {
+                var incidentName = $(this).find('.incident-name').text().toLowerCase();
+                var incidentType = $(this).find('.incident-type').text().toLowerCase();
+
+                if ((incidentName.includes(searchName) || searchName === '') && (incidentType.includes(selectedType) || selectedType === '')) {
+                    $(this).show();
+                }
+            });
+        });
+    });
+</script>
+<script>
+    function openSelectionModal() {
+        // Abre SweetAlert para seleccionar dirección y departamento
+        Swal.fire({
+            title: 'Seleccionar Dirección y Departamento',
+            html: `<div class="swal2-input-group">
+                        <select id="direccion" class="swal2-input">
+                            <option value="direccion1">Dirección 1</option>
+                            <option value="direccion2">Dirección 2</option>
+                        </select>
+                        <select id="departamento" class="swal2-input">
+                            <option value="departamento1">Departamento 1</option>
+                            <option value="departamento2">Departamento 2</option>
+                        </select>
+                    </div>`,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#134982',
+            preConfirm: () => {
+                const direccion = Swal.getPopup().querySelector('#direccion').value;
+                const departamento = Swal.getPopup().querySelector('#departamento').value;
+                // Lógica para procesar la selección y mostrar la siguiente SweetAlert
+                openSolicitudesListModal(direccion, departamento);
+            }
+        });
+    }
+
+    <!-- Modifica la tabla en el script JavaScript -->
+function openSolicitudesListModal(direccion, departamento) {
+    // Lógica para obtener la lista de solicitudes basada en la dirección y el departamento
+    // Puedes personalizar esta parte según tu implementación
+    const listaSolicitudes = [
+        { id: 1, name: 'Solicitud 1', incident: 'Tipo 1' },
+        { id: 2, name: 'Solicitud 2', incident: 'Tipo 2' },
+        { id: 3, name: 'Solicitud 3', incident: 'Tipo 3' }
+    ];
+
+    // Construye la tabla con la lista de solicitudes
+    const tableHtml = `
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Tipo Incidencia</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${listaSolicitudes.map(solicitud => `
+                        <tr class="incident-row" data-incident="${solicitud.incident}">
+                            <td class="incident-name">${solicitud.name}</td>
+                            <td class="incident-type">${solicitud.incident}</td>
+                            <td class="text-end">
+                                <a href="{% url 'territorial_poll_view' 1 %}"
+                                    class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver" style="background-color: #6c757d; color: white;">
+                                    <i class="fas fa-eye me-1"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+
+    // Abre SweetAlert con la lista de solicitudes en formato de tabla
+    Swal.fire({
+        title: `Seleccionar Solicitud`,
+        html: tableHtml,
+        icon: 'info',
+        showConfirmButton: false,
+        showCancelButton: true,
+            cancelButtonText: 'Cancelar',
+
+        customClass: {
+            container: 'sweetalert-table-container'
+        }
+    });
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
+{% endblock %}

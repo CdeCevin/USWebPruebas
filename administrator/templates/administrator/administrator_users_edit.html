@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+
+{% endblock %}
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Usuarios</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'administrator_users_main' %}">Gestión De Usuarios</a></li>
+                    <li class="breadcrumb-item active">Editar Usuario</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method='post' action='{% url 'administrator_edit_save' %}' class="d-md-none">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_data" value="{{user_data.id}}">
+                        <input type="hidden" name="page" value="{{page}}">
+                        <div class="mb-2">
+                            <label for="first_name">Nombre:</label>
+                            <input class="form-control" id="first_name" name="first_name" value="{{user_data.first_name}}" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="last_name">Apellido:</label>
+                            <input class="form-control" id="last_name" name="last_name" value="{{user_data.last_name}}" required>
+                        </div>
+                        <div class="mb-2">
+                            <label for="email">Correo:</label>
+                            <input type="email" class="form-control" id="email" name="email" value="{{user_data.email}}" required />
+                        </div>
+                        <div class="mb-2">
+                            <label for="profile">Perfil:</label>
+                            <select class="form-control" id="profile" name="profile" required>
+                                <option value="">Seleccione un perfil</option>
+                                {% for g in groups %}
+                                    <option value="{{g.id}}" {% if profile_data_user_edit.group_id == g.id %} selected {%endif%}>{{g.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block btn-lg">Editar</button>
+                        <div class="d-lg-none mt-3">
+                            <a class="btn btn-secondary btn-lg btn-block" href="{% url 'administrator_users_main' %}">Volver</a>
+                        </div>
+                    </form>
+
+                    <form method='post' action='{% url 'administrator_edit_save' %}' class="d-none d-md-block">
+                        {% csrf_token %}
+                        <input type="hidden" name="user_data" value="{{user_data.id}}">
+                        <input type="hidden" name="page" value="{{page}}">
+                        <div class="row mb-2">
+                            <div class="col-3">
+                                <label for="first_name">Nombre:</label>
+                                <input class="form-control" id="first_name" name="first_name" value="{{user_data.first_name}}" required>
+                            </div>
+                            <div class="col-3">
+                                <label for="first_name">Apellido:</label>
+                                <input class="form-control" id="last_name" name="last_name" value="{{user_data.last_name}}" required>
+                            </div>
+                            <div class="col-3">
+                                <label for="email">Correo:</label>
+                                <input type="email" class="form-control" id="email" name="email" value="{{user_data.email}}" required />
+                            </div>
+                            <div class="col-3">
+                                <label for="profile">Perfil:</label>
+                                <select class="form-control" id="profile" name="profile" required>
+                                    <option value="">Seleccione un perfil</option>
+                                    {% for g in groups %}
+                                        <option value="{{g.id}}" {% if profile_data_user_edit.group_id == g.id %} selected {%endif%}>{{g.name}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <br>
+                        <div class="row">
+                            <div class="col-2 mb-2">
+                                <a href="{% url 'administrator_users_main' %}" class="btn btn-secondary btn-block btn-md">Volver</a>
+                            </div>
+                            <div class="col-2 mb-2">
+                                <button type="submit" class="btn btn-primary btn-block btn-md">Editar</button>
+                            </div>
+                            
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

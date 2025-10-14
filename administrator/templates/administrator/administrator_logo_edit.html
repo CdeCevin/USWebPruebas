@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Configuración</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item active">Administrador</li>
+                        <li class="breadcrumb-item active"><a href="{% url 'administrator_main' %}">Configuración</a></li>
+                        <li class="breadcrumb-item active">Edita logo</li>                    
+                    </ul>
+                </div>
+            </div>
+        </div> 
+
+
+        <div class="row">
+            <div class="col-md-3">
+                <h4 class="card-title">Logo actual</h4>
+                {% if logo_data %}
+                <img src="{% static 'registration/img/logo_mun.png' %}" alt="" class="img-thumbnail rounded border" style="max-width: 100px; max-height: 100px;"> 
+                {% else %}
+                    <p>No hay logo actual.</p>
+                {% endif %}
+            </div>
+        </div>
+
+
+        <div class="row mt-2">
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">
+                        
+                        <!-- Formulario para cargar el nuevo logo -->
+                        <form action="{% url 'administrator_logo_save' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h4 class="card-title">Nuevo logo</h4>
+                                    <div class="form-group">
+                                        {{ logo_form }}
+                                    </div>
+                                </div>
+                            </div>
+                                                        <!-- Información sobre las imágenes permitidas -->
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="alert alert-info" role="alert">
+                                                                    <strong>Nota:</strong> Solo se permiten archivos PNG.
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                            
+                            <!-- Vista previa de la imagen -->
+                            
+                        <img id="preview-image" src="#" class="img-fluid img-thumbnail" alt="Vista Previa" style="display: none; max-width: 100%; height: auto;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    
+                                    <div class="form-group">
+                                        <div class="row mt-2">
+                                        </div>
+                                        <div class="d-none d-lg-inline text-end mt-4">
+                                            <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px;">Editar</button>
+                                            <a href="{% url 'administrator_main' %}" class="btn btn-primary" style="width: 120px; height: 40px;">Volver</a>
+                                        </div>
+                                        <div class="d-lg-none mt-3 text-center">
+                                            <button class="btn btn-primary d-inline-block mx-2 mb-2" type="submit">Editar</button>
+                                            <a class="btn btn-primary d-inline-block mx-2 mb-2" href="{% url 'administrator_main' %}">Volver</a>
+                                        </div>
+                                    </div> 
+                                </div>
+                            </div>                                                               
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>  
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.querySelector('input[type="file"]');
+            const previewImage = document.getElementById('preview-image');
+    
+            fileInput.addEventListener('change', function () {
+                const allowedExtensions = ['png'];
+                const fileName = this.value.toLowerCase();
+                const fileExtension = fileName.split('.').pop();
+    
+                if (!allowedExtensions.includes(fileExtension)) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Por favor, carga solo archivos PNG.',
+                    });
+                    this.value = '';
+                    previewImage.style.display = 'none';
+                } else {
+                    // Mostrar la vista previa de la imagen
+                    const fileReader = new FileReader();
+    
+                    fileReader.onload = function (e) {
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                    };
+    
+                    fileReader.readAsDataURL(this.files[0]);
+                }
+            });
+        });
+    </script>
+    
+
+{% endblock %}

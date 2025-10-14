@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+
+{% endblock %}
+<style>
+    /* Agrega esto a tu archivo CSS */
+.special-card:hover {
+    transform: scale(1.1); /* Ajusta el factor de escala según tus preferencias */
+    transition: transform 0.3s ease;
+}
+</style>
+
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div class="page-title">
+                <h2 class="m-0 font-weight-bold text-primary">Nuevo Usuario</h2>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Formulario para dispositivos no móviles -->
+            <form method='post' action='{% url 'administrator_users_save' %}' class="d-none d-md-block">
+                {% csrf_token %}
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <label for="first_name">Nombre:</label>
+                        <input class="form-control" id="first_name" name="first_name" required>
+                    </div>
+                    <div class="col-3">
+                        <label for="first_name">Apellido:</label>
+                        <input class="form-control" id="last_name" name="last_name" required>
+                    </div>
+                    <div class="col-3">
+                        <label for="email">Correo:</label>
+                        <input type="email" class="form-control" id="email" name="email" required />
+                    </div>
+                    <div class="col-3">
+                        <label for="profile">Perfil:</label>
+                        <select class="form-control" id="profile" name="profile" required>
+                            <option value="">Seleccione un perfil</option>
+                            {% for g in groups %}
+                                <option value="{{g.id}}">{{g.name}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px; margin-top: 5px;">Crear</button>
+            </form>    
+
+            <!-- Formulario para dispositivos móviles -->
+            <form method='post' action='{% url 'administrator_users_save' %}' class="mb-2 d-md-none">
+                {% csrf_token %}
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <label for="management_name">Nombre:</label>
+                        <input class="form-control" id="first_name" name="first_name" required>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <label for="management_name">Apellido:</label>
+                        <input class="form-control" id="last_name" name="last_name" required>
+                    </div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <label for="management_in_charge">Correo:</label>
+                        <input type="email" class="form-control" id="email" name="email" required />
+                    </div>
+                </div>
+                <div class="row mb-2">
+                <div class="col-12">
+                    <label for="profile">Perfil:</label>
+                    <select class="form-control" id="profile" name="profile" required>
+                        <option value="">Seleccione un perfil</option>
+                        {% for g in groups %}
+                            <option value="{{g.id}}">{{g.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px; margin-top: 5px;">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Espacio entre el formulario y el listado -->
+    <div class="mb-4"></div>
+
+    <div class="card mt-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h2 class="m-0 font-weight-bold text-primary">Gestión de Usuarios</h2>
+                    <h6 class="m-0 font-weight-bold text-primary">Listado De Perfiles</h6>
+                </div>
+                
+                
+            </div>
+        <div class="card-body">
+    
+            <!-- Sección para Usuarios Activos -->
+            <div class="card mb-4">
+                <div class="card-header ">
+                    
+                    <span class="m-0 font-weight-bold text-primary">Usuarios Activos</span> 
+                    <i class="fa fa-check text-success" aria-hidden="true"></i>
+                    
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for group in groups %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card shadow special-card">  
+                                    <div class="card-body d-mg-inline">
+                                        <div class="font-weight-bold text-primary">Perfil: </div>
+                                        <h6 class="card-title  font-weight-bold text-primary">
+                                            <a href="{% url 'administrator_users_list_active' group.id %}" class="text-primary stretched-link">
+                                                {{ group.name }}
+                                            </a>
+                                        </h6>
+                                    </div>
+                                    <div class="card-footer bg-white">
+                                        <i class="fas fa-users fa-2x text-primary"></i>
+                                        <span class="ml-2">{{ group.active_user_count }} Usuarios</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Sección para Usuarios Bloqueados -->
+            <div class="card">
+                <div class="card-header ">
+                    <span class="m-0 font-weight-bold text-primary">Usuarios Bloqueados</span> 
+                    <i class="fas fa-duotone fa-lock text-danger"></i>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for group in groups %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card shadow special-card">
+                                    <div class="card-body">
+                                        <div class="font-weight-bold text-primary">Perfil: </div>
+                                        <h6 class="card-title font-weight-bold text-danger">
+                                            <a href="{% url 'administrator_users_list_block' group.id %}" class="text-danger stretched-link">
+                                               {{ group.name }}
+                                            </a>
+                                        </h6>
+                                    </div>
+                                    <div class="card-footer ">
+                                        <i class="fas fa-user-slash text-primary"></i>
+                                        <span class="ml-2">{{ group.inactive_user_count }} Usuarios</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+{% include 'core/footer.html' %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function capitalizeFirstLetter(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        var firstNameField = document.getElementById("first_name");
+        var lastNameField = document.getElementById("last_name");
+        firstNameField.addEventListener("input", function () {
+            firstNameField.value = capitalizeFirstLetter(firstNameField.value.replace(/\s/g, ''));
+        });
+        lastNameField.addEventListener("input", function () {
+            lastNameField.value = capitalizeFirstLetter(lastNameField.value.replace(/\s/g, ''));
+        });
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+
+<head>
+
+</head>
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Encuesta</h3>
+                                <ul class="breadcrumb">
+                                <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'poll_main' %}">Encuestas</a></li>
+                                <li class="breadcrumb-item active">Editar Encuesta</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="{% url 'poll_edit_end' %}" method="post">
+                                        {% csrf_token %}          
+                                        <input type="hidden" name="poll_id" value="{{poll_data.id}}">      
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Nombre Encuesta</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" placeholder="Escriba el nombre de la encuesta">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                                <div class="form-group">
+                                                    <select name="incident" class="form-control" required>
+                                                        <option value="">Seleccione un tipo</option>
+                                                        {%for i in incidents %}
+                                                            <option value="{{i.id}}" {% if i.id == poll_data.incident_id %}selected{% endif %}>{{i.name}}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br/>   
+                                        <h4 class="card-title ">Este es un ejemplo de lo que se verá en la encuesta por parte de los usuarios territoriales. Debe eliminar los campos que no quiere que aparezcan</h4>      
+                                        <br/>
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title ">Información Personal</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'name_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Nombre vecino <a href="{% url 'poll_fields_delete' poll_data.id 'name_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                         
+                                                        <input type="text" class="form-control" placeholder="Juan Pérez" disabled/>
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'mail_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Email <a href="{% url 'poll_fields_delete' poll_data.id 'mail_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                                        
+                                                        <input type="text" class="form-control" placeholder="correo@gmail.com" disabled/>
+                                                    </div>
+                                                {% endif %}                                        
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if 'rut_neighbor' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Rut <a href="{% url 'poll_fields_delete' poll_data.id 'rut_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                                        
+                                                        <input type="text" class="form-control" placeholder="11111111-1" disabled/>
+                                                    </div>  
+                                                {% endif %}    
+                                                {% if 'pohne_neighbor' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Teléfono <a href="{% url 'poll_fields_delete' poll_data.id 'pohne_neighbor' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>
+                                                        <input type="text" class="form-control" placeholder="+569 12349876" disabled/>
+                                                    </div>  
+                                                {% endif %}                                                                          
+                                            </div>
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Información Incidente</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6"> 
+                                                {% if 'incidence_priority' in poll_fields_standard_array %}                                       
+                                                    <div class="form-group">
+                                                        <label>Prioridad</label>
+                                                    </div>
+                                                    <input type="text" class="form-control" disabled>
+                                                {% endif %}                                          
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if 'incidence_description' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Descripción <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_description' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>
+                                                        <textarea rows="8" cols="5" class="form-control" name="incidence_description" placeholder="Descripción" disabled></textarea>                                                    
+                                                    </div>
+                                                {% endif %}                                           
+                                            </div>
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Información Multimedia</h4>
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_image' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Imagen <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_image' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                                        
+                                                        <input type="text" class="form-control" name="incidence_image" placeholder="Imagen" disabled>
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                            <div class="col-md-6">      
+                                                {% if 'incidence_video' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Video <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_video' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                                 
+                                                        <input type="text" class="form-control" name="incidence_video" placeholder="Video" disabled>
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_audio' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Audio <a href="{% url 'poll_fields_delete' poll_data.id 'incidence_audio' %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"> Eliminar este campo<i class="far fa-trash-alt me-1"></i></a></label>                                                        
+                                                        <input type="text" class="form-control" name="incidence_audio" placeholder="Audio" disabled>
+                                                    </div>
+                                                {% endif %}                                             
+                                            </div>
+                                        </div>
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Información Adicional</h4>
+                                            <div class="row">
+                                                {% for o in poll_fields_other %}
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>{{o.label}} <a href="{% url 'poll_fields_delete' poll_data.id o.name %}" class="btn btn-sm btn-white text-danger me-2 btn-delete-field">Eliminar este campo <i class="far fa-trash-alt me-1"></i></a></label>                                                                
+                                                                <input type="text" class="form-control" placeholder="{{o.label}}" disabled/>
+                                                            </div>
+                                                        </div>
+                                                {% endfor %}
+                                            </div>                                            
+                                        {% endif %}      
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <!-- Botones para pantallas grandes (lg) y más grandes -->
+                                                <div class="form-group d-none d-lg-inline">
+                                                    <div class="d-flex justify-content-between">
+                                                        <button type="submit" class="btn btn-primary mx-2" style="min-width: 220px;">Guardar y Activar</button>
+                                                        <button type="button" class="btn btn-primary mx-2" style="min-width: 220px;" data-toggle="modal" data-target="#crearCampoModal">
+                                                            Agregar Campo
+                                                        </button>
+                                                        <button type="button" class="btn btn-primary mx-2" style="min-width: 220px;" data-toggle="modal" data-target="#returnCampoModal">
+                                                            Recuperar Campos Bloqueados
+                                                        </button>
+                                                        
+                                                    </div>
+                                                </div>
+                                                <!-- Botones para pantallas pequeñas (md) y más pequeñas -->
+                                                <div class="form-group d-lg-none mt-3 text-center">
+                                                    <button class="btn btn-primary d-inline-block mx-2 mb-2"style="min-width: 170px;" type="submit">Guarda y Activa</button>
+                                                    <button class="btn btn-primary d-inline-block mx-2 mb-2"style="min-width: 170px;" type="button" data-toggle="modal" data-target="#crearCampoModal">Agregar Campo</button>
+                                                    <button class="btn btn-primary d-inline-block mx-2 mb-2"style="min-width: 170px;" type="button" data-toggle="modal" data-target="#returnCampoModal">Recuperar Campo</button>
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>                                                                                                     
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+        </div>
+    </div>
+    <div class="modal fade" id="crearCampoModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoModalLabel">Crear Nuevo Campo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{% url 'poll_add_field' poll_id=poll_data.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="input-container">
+                            <label for="nuevoCampo">
+                                Nombre del Nuevo Campo
+                                <i class='fas fa-exclamation-circle icon-tooltip'
+                                title="Recuerde dejar este apartado sin espacios"></i>
+                            </label>
+                            <input type="text" class="form-control" name="nuevo_campo_nombre" id="nuevoCampo" 
+                                pattern="^[^\s]+$" title="No se permiten espacios en blanco">
+                        </div>
+                        <div><small id="campoError" class="text-danger"></small></div>
+
+                        
+                        <label for="labelCampo">Etiqueta del Campo</label>
+                        <input type="text" class="form-control" name="nuevo_campo_label" id="labelCampo">
+                    </div>
+                    
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" id="guardarCampo">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<!-- Modal para recuperar campos bloqueados -->
+<div class="modal fade" id="returnCampoModal" tabindex="-1" role="dialog" aria-labelledby="returnCampoModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnCampoModalLabel">Recuperar Campos Bloqueados</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="camposBloqueadosLista">
+                <form id="recuperarCamposForm">
+                    {% csrf_token %}
+                    {% for campo in campos_bloqueados %}
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="{{ campo.name }}" name="campos[]" value="{{ campo.name }}">
+                            <label class="form-check-label" for="{{ campo.name }}">Recuperar {{ campo.label }}</label>
+                        </div>
+                    {% endfor %}
+                </form>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="recuperarCampos()">Recuperar Campos Seleccionados</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    function recuperarCampos() {
+        var formData = $("#recuperarCamposForm").serialize();
+        
+        $.ajax({
+    type: "POST",
+    url: "{% url 'recuperar_campos' %}",
+    data: formData,
+    success: function(data) {
+        console.log(data);
+
+        setTimeout(function() {
+            location.reload(true);
+        }, 1000);
+
+        // Mostrar alerta SweetAlert
+        Swal.fire({
+            title: 'Éxito',
+            text: 'Campos recuperados con éxito',
+            icon: 'success',
+            timer: 2000, 
+            showConfirmButton: false
+        });
+    },
+    error: function(xhr, status, error) {
+        console.error("Error en la solicitud AJAX:", error);
+    }
+});
+
+    }
+</script>
+
+<script>
+$(document).ready(function() {
+    var camposCreados = [];
+
+    function agregarCampo(name, label, placeholder) {
+        var nuevoCampoHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>${label}</label>
+                        <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i></a>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="${name}" placeholder="${placeholder}" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        $(".informacion-personal-form").append(nuevoCampoHTML);
+    }
+
+    $("#guardarCampo").on("click", function() {
+        var nuevoCampoNombre = $("#nuevoCampo").val();
+        var nuevoCampoLabel = $("#labelCampo").val();
+        var nuevoCampoPlaceholder = $("#placeholderCampo").val();
+
+        if (nuevoCampoNombre && nuevoCampoLabel && nuevoCampoPlaceholder) {
+            camposCreados.push({
+                name: nuevoCampoNombre,
+                label: nuevoCampoLabel,
+                placeholder: nuevoCampoPlaceholder
+            });
+            agregarCampo(nuevoCampoNombre, nuevoCampoLabel, nuevoCampoPlaceholder);
+
+            $("#nuevoCampo").val("");
+            $("#labelCampo").val("");
+            $("#placeholderCampo").val("");
+
+            $.post(
+                "{% url 'poll_edit' poll_id=poll_data.id %}",
+                {
+                    nuevo_campo_nombre: nuevoCampoNombre,
+                    nuevo_campo_label: nuevoCampoLabel,
+                    nuevo_campo_placeholder: nuevoCampoPlaceholder,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                },
+                function(data) {
+                    // Manejar la respuesta del servidor si es necesario
+                }
+            );
+
+            $("#crearCampoModal").modal("hide");
+        }
+    });
+
+    $(".informacion-personal-form").on("click", ".btn-delete-field", function() {
+        $(this).closest(".form-group").remove();
+    });
+});
+</script>
+</body>
+</html>
+{% endblock %}

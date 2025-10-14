@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{% load static %}
+{% block content %}
+{% block extrahead %}
+
+{% endblock %}
+    <div class="container-fluid">
+        Nuevo usuario
+        <ul>
+            <li><a href="{% url 'administrator_users_main' %}">volver</a></li>
+        </ul>
+        <form method='post' action='{% url 'administrator_users_save' %}' class="d-none d-md-block">
+            {% csrf_token %}
+            <div class="row mb-2">
+                <div class="col-3">
+                    <label for="first_name">Nombre</label>
+                    <input class="form-control" id="first_name" name="first_name" required>
+                </div>
+                <div class="col-3">
+                    <label for="first_name">Apellido</label>
+                    <input class="form-control" id="last_name" name="last_name" required>
+                </div>
+                <div class="col-3">
+                    <label for="email">Correo:</label>
+                    <input type="email" class="form-control" id="email" name="email" required />
+                </div>
+                <div class="col-3">
+                    <label for="profile">Perfil:</label>
+                    <select class="form-control" id="profile" name="profile" required>
+                        <option value="">Seleccione un perfil</option>
+                        {% for g in groups %}
+                            <option value="{{g.id}}">{{g.name}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px; margin-top: 5px;">Crear</button>
+        </form>    
+    </div>
+{% endblock %}

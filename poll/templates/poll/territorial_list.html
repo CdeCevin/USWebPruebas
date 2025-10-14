@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+{%load static %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>UrbanSensor</title>
+    <!-- fuentes -->
+    <link href="{% static '/registration/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+    <!--styles  -->
+    <link href="{% static '/registration/css/style.min.css' %}" rel="stylesheet">
+    <!-- <link href="{% static '/registration/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet"> -->
+    <!-- SWEETALERT -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+<style>
+    .mb-3 {
+        text-align: right;
+    }
+
+    .mb-3 a.btn {
+        text-align: end; /* Ajusta el margen según tus necesidades */
+    }
+</style>
+
+
+<body id="page-top">
+
+    <div id="wrapper">
+
+
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'index' %}">
+                <div class="sidebar-brand-text mx-3">UrbanSensor</div>
+            </a>
+
+
+            <hr class="sidebar-divider my-0">
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'index' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span></a>
+            </li>
+
+
+            <hr class="sidebar-divider">
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'incident_list_active' %}" data-target="#collapsePages" aria-expanded="true"
+                    aria-controls="collapsePages">
+                    <i class="fas fa-users"></i>
+                    <span>Incidente</span></a>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link collapsed" href="{% url 'department_list_active' %}" data-target="#collapsePages" aria-expanded="true"
+                    aria-controls="collapsePages">
+                    <i class="fas fa-building"></i>
+                    <span>Departamento</span></a>
+                </a>
+            </li>
+
+
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'poll_main' %}">
+                    <i class="fas fa-th-list"></i>
+                    <span>Encuesta</span></a>
+            </li>
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{% url 'territorial_list' %}">
+                    <i class="fas fa-address-book"></i>
+                    <span>Territorial</span></a>
+            </li>
+            
+
+
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+        </ul>
+
+        <div id="content-wrapper" class="d-flex flex-column">
+
+            <!-- Main-->
+            <div id="content">
+
+                <!-- barra navegacion-->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+
+
+                    <div class="navbar-brand">
+                        <i class="fas fa-sun"></i> Buenos días administrador <span class="font-weight-bold">{{ username }}</span>
+                    </div>
+
+                    <ul class="navbar-nav ml-auto">
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+
+                        <li class="nav-item dropdown no-arrow">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ username }}</span>
+                                <img class="img-profile rounded-circle"
+                                    src="{% static '/registration/img/undraw_profile.svg' %}">
+                            </a>
+
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Salir
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </nav>
+
+
+                <!-- Encuesta -->
+                <div class="container-fluid">
+
+                    <!-- Datos de encuesta -->
+                    <div class="card shadow mb-4">
+
+                        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                            <div>
+                                <h3 class="m-0 font-weight-bold text-primary">Módulo de Encuestas</h3>
+                                    
+                                <h6 class="m-0 font-weight-bold text-primary">Listado de Encuestas Enviadas</h6>
+                            </div>
+
+                            
+                            
+                            
+                            
+                        </div>
+                        
+
+                        <div class="card-body">
+                            <div class="d-flex justify-content-end mb-3">
+                                <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 150px;" placeholder="Buscar">
+                                <span class="input-group-text" id="searchIcon"><i class="fas fa-search"></i></span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Nombre</th>
+                                            <th>Tipo Incidencia</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Contenido de la lista de encuestas activas -->
+                                        {% for pa in poll_list_sent%}
+                                        <tr>
+                                            <td>{{pa.name}}</td>
+                                            <td>{{pa.incident}}</td>
+                                            <td class="text-end">
+                                                <!-- Cambios en el enlace "Ver" -->
+                                                <a href="{% url 'poll_list_view' pa.id %}"
+                                                class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0">
+                                                    <i class="fas fa-search me-1"></i> Ver
+                                                </a>
+
+                                                <!-- Cambios en el botón "Desactivar" -->
+                                                <button class="btn btn-sm btn-danger me-2 mb-2 mb-sm-0 d-sm-inline-block w-sm-auto" onclick="mostrarModal(this)"
+                                                    data-poll-id="{{ pa.id }}">
+                                                    <i class="fas fa-ban me-1"></i> Desactivar
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de Advertencia -->
+                <div class="modal" id="myModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h4 class="modal-title">Encuesta</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <div class="modal-body">
+                                <p>¿Desea desactivar esta encuesta?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="#" id="blockButton" type="button" class="btn btn-danger"
+                                    onclick="desactivarEncuesta()">Desactivar</a>
+
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal de Confirmación de Desactivación -->
+                <div class="modal" id="confirmacionModal" tabindex="-1" role="dialog"
+                    aria-labelledby="confirmacionModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmacionModalLabel">Encuesta Desactivada</h5>
+                            </div>
+                            <div class="modal-body">
+                                <p id="confirmationMessage">La encuesta se ha desactivado correctamente.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; UrbanSensor 2023</span>
+                    </div>
+                </div>
+            </footer>
+
+
+        </div>
+    </div>
+
+
+    <!-- boton Scroll-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Salir</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar su sesión actual.                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url 'logout' %}">Cerrar sesión</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- SweetAlert -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script> -->
+    <!-- Bootstrap JavaScript-->
+    <script src="{% static '/registration/vendor/jquery/jquery.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <!-- plugin JavaScript-->
+    <script src="{% static '/registration/vendor/jquery-easing/jquery.easing.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+    <!-- <script src="{% static '/registration/js/demo/datatables-demo.js' %}"></script> -->
+
+    <!-- scripts-->
+    <script src="{% static '/registration/js/sb-admin-2.js' %}"></script>
+
+
+    <script>
+        function mostrarModal(elemento) {
+            // Obtiene el ID de la encuesta del botón
+            var pollId = $(elemento).data('poll-id');
+            // Pasa el ID al modal
+            $('#myModal').data('poll-id', pollId);
+
+            // Muestra el modal
+            $('#myModal').modal('show');
+        }
+
+
+        function eliminarElemento() {
+            // Obtén la fila a la que pertenece el botón clicado
+            var fila = $(botonClicado).closest('tr');
+
+            // Elimina la fila
+            fila.remove();
+
+            // Cierra el modal
+            $('#myModal').modal('hide');
+        }
+    </script>
+    <script>
+
+
+        function mostrarModal(elemento) {
+            // Obtiene el ID de la encuesta del botón
+            var pollId = $(elemento).data('poll-id');
+
+            // Pasa el ID al modal
+            $('#myModal').data('poll-id', pollId);
+
+            // Muestra el modal
+            $('#myModal').modal('show');
+
+            // Actualiza la URL del botón Bloquear con el ID de la encuesta
+            var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+            console.log('URL de bloqueo al hacer clic:', blockUrl);
+            $('#blockButton').attr('href', blockUrl);
+        }
+
+        $(document).ready(function () {
+            $('#myModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var pollId = button.data('poll-id');
+                var modal = $(this);
+
+                // Verifica que pollId tenga un valor
+                if (pollId !== undefined) {
+                    // Actualiza la URL del botón Bloquear con el ID de la encuesta
+                    var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+                    console.log('URL de bloqueo al hacer clic:', blockUrl);
+                    modal.find('#blockButton').attr('href', blockUrl);
+                }
+            });
+        });
+    </script>
+    <!-- <script>
+        function desactivarEncuesta() {
+            // Cierra el modal de advertencia
+            $('#myModal').modal('hide');
+
+            // Muestra el modal de confirmación
+            $('#confirmacionModal').modal('show');
+
+            // Oculta el modal de confirmación después de 5 segundos
+            setTimeout(function () {
+                $('#confirmacionModal').modal('hide');
+
+                // Realiza la redirección después de que se oculte el modal de confirmación
+                window.location.href = '{% url "poll_main" %}';  // Cambia la URL según tu necesidad
+            }, 1000);
+        }
+    </script> -->
+    <!-- En tu template HTML -->
+    {% if messages %}
+    {% for me in messages %}
+    <script>
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "success",
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>

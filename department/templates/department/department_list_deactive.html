@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Módulo de Departamentos</h3>
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Departamentos Activos</h6>
+            </div>
+            <!-- Botón para dispositivos grandes (lg) y más grandes -->
+            <div class="d-flex justify-content-end align-items-center">
+
+                <div style="margin-left: 20px;" id="btn-container" class="d-none d-lg-inline">
+                    <a class="btn btn-primary" style="min-width: 80px; width: 180px;" href="{% url 'report_department_deactive' %}">Reporte Excel</a>
+                </div>
+
+                <div style="margin-left: 20px;" id="btn-container" class="d-none d-lg-inline">
+                    <a class="btn btn-primary" style="min-width: 80px; width: 180px;" href="{% url 'department_list_active' %}">Activos</a>
+                </div>
+
+            </div>
+        </div>
+        <div class="d-lg-none mt-3">
+            <a class="btn btn-primary d-block mx-auto" href="{% url 'department_list_active' %}">Activos</a>
+        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="input-group" style="width: 200px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="searchIcon"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre dirección</th>
+                            <th>Encargado</th>
+                            <th>Correo</th>
+                            {% if flow == 1 %}
+                            <th>Dirección</th>
+                            {% endif %}
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contenido de la lista de encuestas activas -->
+                        {% for de in department_deactivate_list%}
+                        <tr>
+                            <td>{{ de.deparment_name }}</td>
+                            <td>{{ de.deparment_in_charge }}</td>
+                            <td>{{ de.deparment_in_charge_mail }}</td>
+                            {% if flow == 1 %}
+                            <td>{{ de.management }}</td>
+                            {% endif %}
+                            <td class="text-end" style="white-space: nowrap;">
+                                <!-- Cambios en el botón "Activar" -->
+                                <button class="btn btn-sm btn-success me-2 btn-activar" onclick="mostrarModal(this)" title="Activar Departamento"
+                                    data-element-id="{{ de.id }}">
+                                    <i class="fas fa-unlock fa-lg me-1"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- Paginación -->
+<nav aria-label="Page navigation">
+    <ul class="pagination justify-content-end mt-3">
+        {% if department_deactivate_list.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1" aria-label="First">
+                    <span aria-hidden="true">&laquo;&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ department_deactivate_list.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        <li class="page-item disabled">
+            <span class="page-link">
+                Página {{ department_deactivate_list.number }} de {{ department_deactivate_list.paginator.num_pages }}.
+            </span>
+        </li>
+
+        {% if department_deactivate_list.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ department_deactivate_list.next_page_number }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ department_deactivate_list.paginator.num_pages }}" aria-label="Last">
+                    <span aria-hidden="true">&raquo;&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+                
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Advertencia -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Departamento</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Desea activar este Departamento?</p>
+            </div>
+
+            <div class="modal-footer">
+                <a href="#" type="button" class="btn btn-primary" id="blockButton"
+                    onclick="desactivarEncuesta()">Activar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+</div>
+<script>
+    // Define la URL
+    var baseUrl = '{% url "department_activate" 0 %}';
+
+</script>
+<script src="{% static '/registration/js/activate.js' %}"></script>
+</body>
+</html>
+{% endblock %}

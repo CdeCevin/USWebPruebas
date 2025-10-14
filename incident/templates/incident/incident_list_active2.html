@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Creación de Incidencias</h3>
+            </div>
+        </div>
+        <div class="card-body">
+            <form method='post' action='{% url 'incident_add' %}'>
+                {% csrf_token %}
+                
+                <div class="mb-2">
+                    <div class="row">
+                        <div class="col-sm-6 col-md-4">
+                            <label for="name_incident">Nombre Incidente:</label>
+                            <input class="form-control" id="name_incident" name="name_incident">
+                        </div>
+                        <div class="col-sm-6 col-md-4">
+                            <label for="management_id">Dirección:</label>
+                            <select id="management_id" name="management_id" class="form-control" onchange="updateDepartments()" required>
+                                <option value="" selected>Seleccionar Dirección</option>
+                                {% for de in management_activate_list %}
+                                <option value="{{ de.id }}">{{ de.management_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            
+                <button type="submit" class="btn btn-primary" style="width: 120px; height: 40px; margin-top: 5px;">Crear</button>
+            </form>
+        </div>
+        
+    </div>
+
+    <!-- Lista de incidencias -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Módulo de Incidencias                     <span style="margin-left: 10px;">
+                    <a href="#" download>
+                        <i class="fas fa-file-pdf fa-lg" title="Descargar Manual"></i>
+                    </a>
+                </span>
+            </h3></h3>
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Incidencias Activas</h6>
+            </div>
+            <!-- Botón para dispositivos grandes (lg) y más grandes -->
+            <div style="margin-left: 1px;" id="btn-container" class="d-none d-lg-inline">
+                <a class="btn btn-primary" style="min-width: 80px; width: 180px;" href="{% url 'incident_list_deactive' %}">Desactivos</a>
+            </div>
+
+        </div>
+                        <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+                        <div class="d-lg-none mt-3">
+                            <a class="btn btn-primary d-block mx-auto" href="{% url 'incident_list_deactive' %}">Desactivos</a>
+                        </div>
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <div class="input-group" style="width: 200px;">
+                    <input type="text" id="searchInput" class="form-control form-control-sm" placeholder="Buscar">
+                    <div class="input-group-append">
+                        <span class="input-group-text" id="searchIcon"><i class="fas fa-search"></i></span>
+                    </div>
+                </div>
+            </div>
+            <div class="container-fluid">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th width="30%">Incidencia</th>
+                                <th width="30%">Dirección</th>
+                                <th width="20%">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Contenido de la lista de encuestas activas -->
+                            {% for inc in incident_activate_list%}
+                            <tr>
+                                <td>{{inc.name}}</td>
+                                <td>{{inc.management}}</td>
+
+                                <td class="text-end" style="white-space: nowrap;">
+                                    <a href="{% url 'incident_edit' inc.id %}"
+                                    class="btn btn-sm btn-primary me-2 mb-2 mb-sm-0 btn-editar"title="Editar Incidencia">
+                                    <i class="far fa-edit fa-lg me-1"></i>
+                                    </a>
+                                    <button class="btn btn-sm btn-danger me-2 mb-2 mb-sm-0 d-sm-inline-block w-sm-auto btn-desactivar"title="Desactivar Incidencia"
+                                        onclick="mostrarModal(this)" data-element-id="{{ inc.id }}">
+                                        <i class="fas fa-lock fa-lg me-1"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                            <!-- Paginación -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end mt-3">
+                {% if incident_activate_list.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1" aria-label="First">
+                            <span aria-hidden="true">&laquo;&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ incident_activate_list.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item disabled">
+                    <span class="page-link">
+                        Página {{ incident_activate_list.number }} de {{ incident_activate_list.paginator.num_pages }}.
+                    </span>
+                </li>
+
+                {% if incident_activate_list.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ incident_activate_list.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ incident_activate_list.paginator.num_pages }}" aria-label="Last">
+                            <span aria-hidden="true">&raquo;&raquo;</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Advertencia -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Incidencia</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Desea desactivar esta incidencia?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="blockButton" type="button" class="btn btn-danger"
+                    onclick="desactivarInc()">Desactivar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+</div>
+<script>
+    // Define la URL
+    var baseUrl = '{% url "incident_block" 0 %}';
+
+</script>
+<script src="{% static '/registration/js/activate.js' %}"></script>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+{% extends 'core/base_brigade.html' %}
+{%load static %}
+{% block content %}
+<body id="page-top">
+
+        
+                <!-- Encuesta -->
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Solicitud en Progreso</h3>
+                                <ul class="breadcrumb">
+                                <li class="breadcrumb-item active"><a href=#>Inicio</a></li>
+                                <li class="breadcrumb-item"><a href=#>Solicitud</a></li>
+                                <li class="breadcrumb-item active">Ver Solicitud</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>                
+                        
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                        </div>
+                                    </div>
+                                    <!-- 'poll_add_territorial -->
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Título</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>         
+                                        
+                                        
+                                        
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title ">Información Personal</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                
+                                                
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'name_neighbor' %}
+                                                    <div class="form-group">
+                                                        <label>Nombre Vecino</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'mail_neighbor' %}
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}
+                                                {% endfor %}                                 
+                                            </div>
+                                            <div class="col-md-6">    
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'pohne_neighbor' %}                              
+                                                    <div class="form-group">
+                                                        <label>Teléfono</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>  
+                                                {% endif %}  
+                                                {% endfor %}                                                                         
+                                            </div>
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Información Incidente</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_classification' %}      
+                                                    <div class="form-group">
+                                                        <label>Clasificación incidencia</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}  
+
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_priority' %}                                        
+                                                    <div class="form-group">
+                                                        <label>Prioridad</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}    
+
+                                                <div class="form-group">
+                                                    <label>Ubicación</label>
+                                                    <input type="text" class="form-control" name="incidence_location" value="Ubicación">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_description' %}    
+                                                    <div class="form-group">
+                                                        <label>Descripción</label>
+                                                        <textarea rows="8" cols="5" class="form-control" name="" placeholder=""></textarea>
+                                                    </div>
+                                                {% endif %}    
+                                                {% endfor %}                                         
+                                            </div>
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Información Multimedia</h4>
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_image' %}  
+                                                    <div class="form-group">
+                                                        <label>Imagen</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}                                        
+                                            </div>
+                                            <div class="col-md-6">      
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_video' %}                                
+                                                    <div class="form-group">
+                                                        <label>Video</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}  
+                                                {% endfor %}                                          
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_audio' %}    
+                                                    <div class="form-group">
+                                                        <label>Audio</label>
+                                                        <input type="text" class="form-control" name="" value="">
+                                                    </div>
+                                                {% endif %}  
+                                                {% endfor %}                                            
+                                            </div>
+                                        </div>  
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Otra</h4>
+                                            <div class="row">
+                                                {% for o in poll_fields_other %}
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>{{o.label}}</label>
+                                                                <input type="text" class="form-control" name="" value="">
+                                                            </div>
+                                                        </div>
+
+                                                {% endfor %}
+                                            </div>                                            
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <!-- Botones para pantallas grandes (lg) y más grandes -->
+                                                <div class="form-group d-none d-lg-inline">
+                                                    <div class="d-flex justify-content-between">
+
+                                                        <button id="finishButton" class="btn btn-primary mx-2" style="min-width: 220px;">Agregar información</button>
+                                                        <button id="" class="btn btn-primary mx-2" style="min-width: 220px;">Finalizar</button>
+
+                                                        <a type="button" href="{% url 'cuadrilla_main' %}" class="btn btn-primary mx-2" style="min-width: 220px;">Volver</a>
+
+                                                        
+                                                    </div>
+                                                </div>
+                                                <!-- Botones para pantallas pequeñas (md) y más pequeñas -->
+                                                <div class="form-group d-lg-none mt-3 text-center">
+                                                    <a href=# class="btn btn-primary d-inline-block mx-2 mb-2"style="min-width: 170px;" type="button">Agregar Información</a>
+                                                    <a class="btn btn-primary d-inline-block mx-2 mb-2"href="{% url 'cuadrilla_main' %}"style="min-width: 170px;" type="button" >Finalizar Solicitud</a>
+                                                    <a class="btn btn-primary d-inline-block mx-2 mb-2"href="{% url 'cuadrilla_main' %}"style="min-width: 170px;" type="button" >Volver</a>
+                                                </div>
+                                            </div>
+                                        </div>                                                                                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+        </div>
+    </div>
+</body>
+
+{% block scripts %}
+
+<script>
+    function showFinishSurveyAlert() {
+        Swal.fire({
+            title: 'Agregar Información Sobre Solicitud',
+            html: `
+                <div style="margin-bottom: 15px;">
+                    <label for="incidentDescription" class="form-label">Descripción del Incidente:</label>
+                    <textarea id="incidentDescription" class="form-control" placeholder="Ingrese la descripción"></textarea>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label for="incidentImage" class="form-label">Imagen del Incidente:</label>
+                    <div class="input-group">
+                        <input type="text" id="incidentImagePath" class="form-control" readonly placeholder="Seleccionar archivo" style="cursor: pointer;">
+                        <label class="input-group-text" for="incidentImage" style="cursor: pointer;">Subir</label>
+                        <input type="file" id="incidentImage" class="form-control" accept="image/*" style="display: none;">
+                    </div>
+                    <small class="form-text text-muted">Sube una imagen relacionada con el incidente.</small>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonColor: '#134982',
+            confirmButtonText: 'Guardar',
+            cancelButtonText: 'Cancelar',
+            preConfirm: () => {
+                const incidentDescription = $('#incidentDescription').val();
+                const incidentImage = $('#incidentImage')[0].files[0];
+
+                const formData = new FormData();
+                formData.append('incidentDescription', incidentDescription);
+                formData.append('incidentImage', incidentImage);
+
+                return fetch('/brigade_alert/', { // URL actualizada
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken') // Para incluir CSRF token
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud al backend');
+                    }
+                    return response.json();
+                });
+            }
+        })
+    }
+
+    $(document).ready(function () {
+        $('#finishButton').on('click', function () {
+            showFinishSurveyAlert();
+        });
+    });
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Does this cookie string begin with the name we want?
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+{% endblock %}
+
+</html>
+{% endblock %}

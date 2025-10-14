@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Incidente</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'incident_list_active' %}">Incidencia</a></li>
+                    <li class="breadcrumb-item active">Editar Incidencia</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method='post' action='{% url 'incident_edit_save' %}'>
+                        {% csrf_token %}
+                        <input type="hidden" name="id_incident" value="{{incident_data.id}}"/>
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <label for="name_incident" class="form-label">Tipo de Incidente:</label>
+                                <input class="form-control" id="name_incident" name="name_incident" value="{{ incident_data.name }}">
+                            </div>
+                        
+                            <div class="col-md-4">
+                                <label for="management_id" class="form-label">Dirección:</label>
+                                <select type="text" class="form-control" id="management_id" name="management_id">
+                                    {% for de in management_activate_list %}
+                                        <option value="{{ de.id }}" {% if de.id == incident_data.management_id %} selected{% endif %}>{{ de.management_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        
+                            <div class="col-md-4">
+                                {% if flow == 1 %}
+                                    <label for="department_id" class="form-label">Departamento:</label>
+                                    <select type="text" class="form-control" id="department_id" name="department_id">
+                                        {% for de in department_activate_list %}
+                                            <option value="{{ de.id }}"{% if de.id == incident_data.deparment_id %} selected {% endif %}>{{ de.deparment_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <div class="d-none d-lg-inline text-end mt-4">
+                                        <button type="submit" class="btn btn-primary"style="width: 120px; height: 40px;">Editar</button>
+                                        <a href="{% url 'incident_list_active' %}" class="btn btn-primary" style="width: 120px; height: 40px;">Volver</a>
+                                    </div>
+                                    <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+                                    <div class="d-lg-none mt-3 text-center">
+                                        <button class="btn btn-primary d-inline-block mx-2 mb-2" type="submit">Editar</button>
+                                        <a class="btn btn-primary d-inline-block mx-2 mb-2" href="{% url 'incident_list_active' %}">Volver</a>
+                                    </div>
+                                </div> 
+                            </div>
+                        </div> 
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+</div>
+</body>
+</html>
+{% endblock %}

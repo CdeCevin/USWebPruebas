@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>UrbanSensor</title>
+
+
+</head>
+
+
+<!-- Encuesta -->
+<div class="container-fluid">
+
+    <!-- Datos de encuesta -->
+    <div class="card shadow mb-4">
+
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="m-0 font-weight-bold text-primary">Módulo de Encuestas</h3>
+
+                <h6 class="m-0 font-weight-bold text-primary">Listado de Encuestas Activas</h6>
+            </div>
+            <!-- Botón para dispositivos grandes (lg) y más grandes -->
+            <div style="margin-left: 1px;" id="btn-container" class="d-none d-lg-inline d-md-flex">
+                <a class="btn btn-primary mx-2" style="min-width: 80px;" href=#>En
+                    Creación</a>
+                <a class="btn btn-primary mx-2" style="min-width: 80px;" href=#>Desactivas</a>
+                <a class="btn btn-primary mx-2" style="min-width: 80px;" href=#><i
+                        class="fas fa-plus me-1"></i>Crear</a>
+            </div>
+
+
+
+
+
+        </div>
+
+
+        <div class="card-body">
+            <div class="d-flex justify-content-end mb-3">
+                <input type="text" id="searchInput" class="form-control form-control-sm" style="width: 150px;"
+                    placeholder="Buscar">
+                <span class="input-group-text" id="searchIcon"><i class="fas fa-search"></i></span>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo Incidencia</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Contenido de la lista de encuestas activas -->
+                        {% for pa in poll_activate_list%}
+                        <tr>
+                            <td>{{pa.name}}</td>
+                            <td>{{pa.incident}}</td>
+                            <td class="text-end">
+                                <!-- Cambios en el enlace "Ver" -->
+                                <a href=# class="btn btn-sm btn-secondary me-2 mb-2 mb-sm-0 btn-ver">
+                                    <i class="fas fa-search me-1"></i> Ver
+                                </a>
+
+                                <!-- Cambios en el botón "Desactivar" -->
+                                <button
+                                    class="btn btn-sm btn-danger me-2 mb-2 mb-sm-0 d-sm-inline-block w-sm-auto btn-desactivar"
+                                    onclick="mostrarModal(this)" data-poll-id="{{ pa.id }}">
+                                    <i class="fas fa-ban me-1"></i> Desactivar
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- Botón para dispositivos pequeños (md) y más pequeños -->
+            <div class="d-lg-none mt-3 text-center">
+                <a class="btn btn-primary d-block mx-auto mb-3 text-center" href=#>En
+                    Creación</a>
+                <a class="btn btn-primary d-block mx-auto mb-3 text-center" href=#>Desactivas</a>
+                <a class="btn btn-primary d-block mx-auto mb-3 text-center" href=#><i
+                        class="fas fa-plus me-1"></i>Crear</a>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!-- Modal de Advertencia -->
+<div class="modal" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title">Encuesta</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <p>¿Desea desactivar esta encuesta?</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#" id="blockButton" type="button" class="btn btn-danger"
+                    onclick="desactivarEncuesta()">Desactivar</a>
+
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal de Confirmación de Desactivación -->
+<div class="modal" id="confirmacionModal" tabindex="-1" role="dialog" aria-labelledby="confirmacionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmacionModalLabel">Encuesta Desactivada</h5>
+            </div>
+            <div class="modal-body">
+                <p id="confirmationMessage">La encuesta se ha desactivado correctamente.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+<!-- Footer -->
+<footer class="sticky-footer bg-white">
+    <div class="container my-auto">
+        <div class="copyright text-center my-auto">
+            <span>Copyright &copy; UrbanSensor 2023</span>
+        </div>
+    </div>
+</footer>
+
+
+</div>
+</div>
+
+
+
+
+
+<script>
+    function mostrarModal(elemento) {
+        // Obtiene el ID de la encuesta del botón
+        var pollId = $(elemento).data('poll-id');
+        // Pasa el ID al modal
+        $('#myModal').data('poll-id', pollId);
+
+        // Muestra el modal
+        $('#myModal').modal('show');
+    }
+
+
+    function eliminarElemento() {
+        // Obtén la fila a la que pertenece el botón clicado
+        var fila = $(botonClicado).closest('tr');
+
+        // Elimina la fila
+        fila.remove();
+
+        // Cierra el modal
+        $('#myModal').modal('hide');
+    }
+</script>
+<script>
+
+
+    function mostrarModal(elemento) {
+        // Obtiene el ID de la encuesta del botón
+        var pollId = $(elemento).data('poll-id');
+
+        // Pasa el ID al modal
+        $('#myModal').data('poll-id', pollId);
+
+        // Muestra el modal
+        $('#myModal').modal('show');
+
+        // Actualiza la URL del botón Bloquear con el ID de la encuesta
+        var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+        console.log('URL de bloqueo al hacer clic:', blockUrl);
+        $('#blockButton').attr('href', blockUrl);
+    }
+
+    $(document).ready(function () {
+        $('#myModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            var pollId = button.data('poll-id');
+            var modal = $(this);
+
+            // Verifica que pollId tenga un valor
+            if (pollId !== undefined) {
+                // Actualiza la URL del botón Bloquear con el ID de la encuesta
+                var blockUrl = '{% url "poll_block" 0 %}'.replace('0', pollId.toString());
+                console.log('URL de bloqueo al hacer clic:', blockUrl);
+                modal.find('#blockButton').attr('href', blockUrl);
+            }
+        });
+    });
+</script>
+
+
+</body>
+
+</html>
+{% endblock %}

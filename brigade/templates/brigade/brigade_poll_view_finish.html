@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+{% extends 'core/base_brigade.html' %}
+{%load static %}
+{% block content %}
+<body id="page-top">       
+    <div class="content container-fluid">
+        <div class="page-header">
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3 class="page-title">Solicitud Finalizada</h3>
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item active"><a href="{% url 'cuadrilla_main' %}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'brigade_list_finish' %}">Solicitudes Finalizadas</a></li>
+                        <li class="breadcrumb-item active">Ver Solicitud</li>
+                    </ul>
+                </div>
+            </div>
+        </div>                
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-body">        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4 class="card-title ">Título</h4>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.name}}" disabled>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.incident}}" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <br> 
+                        <h4 class="card-title">Información Personal</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'name_neighbor' %}
+                                        <div class="form-group">
+                                            <label>Nombre Vecino</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value="{{ field_value }}" disabled>
+                                        </div>
+                                    {% elif field_name == 'mail_neighbor' %}
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value="{{ field_value }}" disabled>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'pohne_neighbor' %}
+                                        <div class="form-group">
+                                            <label>Teléfono</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value=" {{ field_value }}" disabled>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'rut_neighbor' %}
+                                        <div class="form-group">
+                                            <label>Rut</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value=" {{ field_value }}" disabled>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <h4 class="card-title mt-4">Información Incidente</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'incidence_classification' %}
+                                        <div class="form-group">
+                                            <label>Clasificación incidencia</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value="{{ field_value }}" disabled>
+                                        </div>
+                                    {% elif field_name == 'incidence_priority' %}
+                                        <div class="form-group">
+                                            <label>Prioridad</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value="{{ field_value }}" disabled>
+                                        </div>
+                                    {% elif field_name == 'incidence_location' %}
+                                        <div class="form-group">
+                                            <label>Ubicación</label>
+                                            <input type="text" class="form-control" name="{{ field_name }}" value="{{ field_value }}" disabled>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'incidence_description' %}
+                                        <div class="form-group">
+                                            <label>Descripción</label>
+                                            <textarea rows="8" cols="5" class="form-control" name="{{ field_name }}" disabled>{{ field_value }}</textarea>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <h4 class="card-title mt-4">Información Multimedia</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'incidence_image' %}
+                                        <label>Imagen</label>
+                                        <div class="row">                                                            
+                                            {% for imagen in images %}
+                                                <div class="col-md-4 mb-4">
+                                                    <div class="card">
+                                                        <img src="{{ imagen }}" alt="title">
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'incidence_video' %}
+                                        <div class="form-group">
+                                            <label>Video</label>
+                                            {% if incidence_video != '' %}
+                                                <video width="100%" height="240" controls>
+                                                    <source src="{{incidence_video}}" type="video/mp4">
+                                                    Tu navegador no soporta la etiqueta de video.
+                                                </video> 
+                                            {% else %}
+                                                <p>El video no se cargó correctamente.</p>                                                                                                              
+                                            {% endif %}                                                                
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                {% for field_name, field_value in field_answer_pairs %}
+                                    {% if field_name == 'incidence_audio' %}
+                                        <div class="form-group">
+                                            <label>Audio</label>
+                                            {% if field_value != '' %}
+                                                <audio controls>
+                                                    <source src="{{ incidence_audio }}" type="audio/mpeg">
+                                                    Tu navegador no soporta la etiqueta de audio.
+                                                </audio>
+                                            {% else %}
+                                                <p>El audio no se cargó correctamente.</p>                                                                                                              
+                                            {% endif %}                                                         
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <h4 class="card-title mt-4">Ubicación</h4>
+                        <div class="row">
+                            <div class="col-md-12">  
+                                {% if lat != '' and lon != '' %}                                       
+                                    <div id="map"></div>
+                                {% else %}
+                                    <p>Las coordenadas no se cargaron correctamente.</p>                                                    
+                                {% endif %}
+                            </div>
+                        </div>                        
+                        <div class="form-group">
+                            {% if fields_record %}
+                                <h4 class="card-title mt-4">Informacion de Finalizacion</h4>
+                            {% endif %}
+                            {% for f in fields_record %}
+                                {% if f.request_record_kind == 'Descripcion' %}
+                                    <div class="form-group">
+                                        <label>Descripción</label>
+                                        <input type="text" class="form-control" id="" name="" value="{{f.request_record_text}}" disabled>
+                                    </div>
+                                {% endif %} 
+                                {% if f.request_record_kind == 'Imagenes' %}
+                                    <label for="incidence_record_image" class="form-label">Imagenes</label>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">                                        
+                                                <img src="{{f.request_record_text}}" alt="Imagenes" width="500" height="auto">
+                                            </div>
+                                        </div>
+                                    </div>                                    
+                                {% endif %}
+                            {%endfor%}
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-3">
+                                <!-- Botones para pantallas grandes (lg) y más grandes -->
+                                <div class="form-group d-none d-lg-inline">
+                                    <div class="d-flex justify-content-between">
+                                        <a type="button" href="{% url 'brigade_list_finish' %}" class="btn btn-primary mx-2" style="min-width: 220px;">Volver</a>                                        
+                                    </div>
+                                </div>
+                                <!-- Botones para pantallas pequeñas (md) y más pequeñas -->
+                                <div class="form-group d-lg-none mt-3 text-center">
+                                    <a class="btn btn-primary d-inline-block mx-2 mb-2"href="{% url 'brigade_list_finish' %}"style="min-width: 170px;" type="button" >Volver</a>
+                                </div>
+                            </div>
+                        </div> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Llamada del footer -->
+            {% include 'core/footer.html' %}
+        </div>
+    </div>
+</body>
+<script>
+    function initMap() {
+        const ubicacion = { lat: {{ lat }}, lng: {{ lon }} };
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: ubicacion,
+        });
+        const marker = new google.maps.Marker({
+            position: ubicacion,
+            map: map,
+        });
+    }
+</script>
+<script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBuYuM-g2fRBcIyADL5lx65WBQbBrCDmKg&callback=initMap"></script>
+{% endblock %}

@@ -1,0 +1,310 @@
+{% load static %}
+<html lang="es">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>UrbanSensor</title>
+
+    <!-- Fuentes -->
+    <link href="{% static 'registration/vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.1/css/all.css" crossorigin="anonymous">
+
+    <!-- Estilos -->
+    <link href="{% static '/registration/css/style.min.css' %}" rel="stylesheet">
+
+    <style>
+        .mb-3 button,
+        .btn-editar,
+        .btn-ver,
+        .btn-desactivar,
+        .btn-activar {
+            width: 60px;
+            /* Ancho deseado */
+        }
+
+        #map {
+            height: 300px;
+            width: 100%;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+        }
+
+        .icon-tooltip {
+            margin-left: 8px;
+            /* Ajusta el valor según sea necesario */
+        }
+
+        .card {
+            border: 2px solid transparent;
+            /* Establece un borde transparente por defecto */
+            transition: border 0.3s;
+            /* Agrega una transición para un cambio suave */
+        }
+
+        .card-selected {
+            border: 2px solid rgb(0, 0, 0);
+            /* Color y grosor del borde seleccionado */
+            padding: 0;
+            /* Elimina el relleno para que el borde ocupe el mismo espacio que la tarjeta */
+        }
+    </style>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <!-- Buscador -->
+    <script src="{% static '/registration/js/search.js' %}"></script>
+
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body id="page-top">
+    <div id="wrapper">
+        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'dashboard_brigade' %}">
+                <div class="sidebar-brand-text mx-3">UrbanSensor</div>
+            </a>
+            <hr class="sidebar-divider my-0">
+
+            <!-- Inicio -->
+            <li class="nav-item {% if '/dashboard_brigade' in request.path or '/cuadrilla_main' in request.path or '/brigade_list_progress' in request.path or '/brigade_list_finish' in request.path or '/brigade_poll_view_finish' in request.path or '/brigade_poll_view_progress' in request.path or '/brigade_poll_start' in request.path %}active{% endif %}">
+                <a class="nav-link" href="{% url 'dashboard_brigade' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+            </li>
+            
+            <hr class="sidebar-divider my-0">
+            
+            <!-- Perfil -->
+            <li class="nav-item {% if '/brigade_view_profile' in request.path %}active{% endif %}">
+                <a class="nav-link collapsed" href="{% url 'brigade_view_profile' %}" data-target="#collapsePages"
+                    aria-expanded="true" aria-controls="collapsePages">
+                    <i class="fas fa-user"></i>
+                    <span>Perfil </span>
+                </a>
+            </li>
+            
+
+
+            <hr class="sidebar-divider my-0">
+            <!-- Cerrar Sesión (Solo para dispositivos móviles) -->
+            <li class="nav-item d-md-none">
+                <a class="nav-link" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </li>
+
+
+
+            <hr class="sidebar-divider d-none d-md-block">
+
+            <div class="text-center d-none d-md-inline">
+                <button class="rounded-circle border-0" id="sidebarToggle"></button>
+            </div>
+
+
+        </ul>
+        <div id="content-wrapper" class="d-flex flex-column">
+            <!-- Main -->
+            <div id="content">
+                <!-- barra navegacion superior -->
+                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                    <!-- Sidebar Toggle (Topbar) -->
+                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                        <i class="fa fa-bars"></i>
+                    </button>
+                    <div class="navbar-brand">
+
+
+
+                    </div>
+
+                    <ul class="navbar-nav ml-auto">
+
+                        <div class="topbar-divider d-none d-sm-block"></div>
+
+
+                        <!-- informacion de usuario -->
+                        <li class="nav-item dropdown no-arrow">
+
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {% if user.is_authenticated %}
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.first_name }}</span>
+                                {% else %}
+                                {% endif %}
+
+                                <img class="img-profile rounded-circle"
+                                    src="{% static '/registration/img/undraw_profile.svg' %}">
+
+                            </a>
+                            <!-- Dropdown - User Information -->
+                            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                                aria-labelledby="userDropdown">
+                                <a class="dropdown-item" href="#">
+                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Perfil
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Salir
+                                </a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </nav>
+
+                <!-- fin barra navegacion superior-->
+                {% block content %}
+
+                {% endblock %}
+
+
+
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Bootstrap y otros scripts -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="{% static '/registration/js/sb-admin-2.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+    <script src="{% static '/registration/vendor/datatables/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static '/registration/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Botón Scroll -->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <!-- Modal-->
+    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Salir</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">Seleccione "Cerrar sesión" a continuación si está listo para finalizar
+                    su sesión
+                    actual. </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-primary" href="{% url 'logout' %}">Cerrar sesión</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            var hora = new Date().getHours();
+            var saludo, icono;
+            if (hora >= 6 && hora < 12) {
+                saludo = "Buenos días";
+                icono = '<i class="fas fa-sun"></i>';
+            } else if (hora >= 12 && hora < 18) {
+                saludo = "Buenas tardes";
+                icono = '<i class="fas fa-sun"></i>';
+            } else {
+                saludo = "Buenas noches";
+                icono = '<i class="fas fa-moon"></i>';
+            }
+            $(".navbar-brand").html(icono + ' ' + saludo + ', <span class="font-weight-bold">{{ user.first_name }}</span>');
+        });
+
+    </script>
+
+    <!-- Generador Sweet Alert-->
+    {% if messages %}
+    {% for me in messages %}
+    <script>
+        Swal.fire({
+            "title": "ATENCIÓN",
+            "text": "{{me}}",
+            "icon": "success",
+        })
+    </script>
+    {% endfor %}
+    {% endif %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.innerWidth < 768) {
+                if (!document.body.classList.contains('sidebar-expanded')) {
+                    $('#accordionSidebar').addClass('toggled');
+                }
+            }
+        });
+
+        $(document).ready(function () {
+            if (window.innerWidth < 768) {
+                var openSidebarUrl = '/cuadrilla_main';
+                var currentUrl = window.location.pathname;
+                var sidebarCollapsed = $.cookie('sidebarCollapsed');
+
+                if (sidebarCollapsed === undefined || currentUrl !== openSidebarUrl) {
+                    sidebarCollapsed = 'true';
+                    $.cookie('sidebarCollapsed', sidebarCollapsed);
+                }
+
+                setSidebarState(sidebarCollapsed);
+
+                $('#sidebarToggleTop').on('click', function () {
+                    var newSidebarState = toggleSidebarState();
+                    setSidebarState(newSidebarState);
+                });
+
+                function toggleSidebarState() {
+                    var currentState = $.cookie('sidebarCollapsed');
+                    var newState = (currentState === 'true') ? 'false' : 'true';
+                    $.cookie('sidebarCollapsed', newState);
+                    return newState;
+                }
+
+                function setSidebarState(state) {
+                    var body = $('body');
+                    if (state === 'true' && currentUrl === openSidebarUrl) {
+                        body.addClass('sidebar-toggled');
+                        $('#accordionSidebar').addClass('toggled');
+                    } else {
+                        body.removeClass('sidebar-toggled');
+                        $('#accordionSidebar').removeClass('toggled');
+                    }
+                }
+            }
+        });
+    </script>
+
+
+
+</body>
+
+
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+{% extends 'core/base_territorial.html' %}
+{%load static %}
+{% block content %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $(".btn-delete-field").on("click", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+
+    <title>UrbanSensor</title>
+
+    
+</head>
+
+
+
+<body id="page-top">
+
+        
+                <!-- Encuesta -->
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Encuesta</h3>
+                                <ul class="breadcrumb">
+                                <li class="breadcrumb-item active"><a href=#>Inicio</a></li>
+                                <li class="breadcrumb-item"><a href=#>Encuestas</a></li>
+                                <li class="breadcrumb-item active">Ver Encuesta</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>                
+                        
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h4 class="card-title">
+                                                Esta vista es solo referencial, para que puedas revisar los campos que deberá llenar en caso de aplicarla
+                                            </h4>
+                                        </div>
+                                    </div>
+                                    <!-- 'poll_add_territorial -->
+    
+    
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Título</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.name}}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.incident}}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>         
+                                        
+                                        
+                                        
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title ">Información Personal</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                
+                                                
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'name_neighbor' %}
+                                                    <div class="form-group">
+                                                        <label>Nombre Vecino</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}
+                                                {% endfor %}
+                                                
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'mail_neighbor' %}
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}
+                                                {% endfor %}                                 
+                                            </div>
+                                            <div class="col-md-6">    
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'pohne_neighbor' %}                              
+                                                    <div class="form-group">
+                                                        <label>Teléfono</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="+56 {{ field.placeholder }}">
+                                                    </div>  
+                                                {% endif %}  
+                                                {% endfor %}                                                                         
+                                            </div>
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Información Incidente</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_classification' %}      
+                                                    <div class="form-group">
+                                                        <label>Clasificación incidencia</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}  
+
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_priority' %}                                        
+                                                    <div class="form-group">
+                                                        <label>Prioridad</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}    
+
+                                                <div class="form-group">
+                                                    <label>Ubicación</label>
+                                                    <input type="text" class="form-control" name="incidence_location" value="Ubicación">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_description' %}    
+                                                    <div class="form-group">
+                                                        <label>Descripción</label>
+                                                        <textarea rows="8" cols="5" class="form-control" name="{{ field.name }}" placeholder="{{ field.placeholder }}"></textarea>
+                                                    </div>
+                                                {% endif %}    
+                                                {% endfor %}                                         
+                                            </div>
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Información Multimedia</h4>
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_image' %}  
+                                                    <div class="form-group">
+                                                        <label>Imagen</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}   
+                                                {% endfor %}                                        
+                                            </div>
+                                            <div class="col-md-6">      
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_video' %}                                
+                                                    <div class="form-group">
+                                                        <label>Video</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}  
+                                                {% endfor %}                                          
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% for field in poll_data.fields_set.all %}
+                                                {% if field.name == 'incidence_audio' %}    
+                                                    <div class="form-group">
+                                                        <label>Audio</label>
+                                                        <input type="text" class="form-control" name="{{ field.name }}" value="{{ field.placeholder }}">
+                                                    </div>
+                                                {% endif %}  
+                                                {% endfor %}                                            
+                                            </div>
+                                        </div>  
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Otra</h4>
+                                            <div class="row">
+                                                {% for o in poll_fields_other %}
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>{{o.label}}</label>
+                                                                <input type="text" class="form-control" name="{{o.name}}" value="{{o.placeholder}}">
+                                                            </div>
+                                                        </div>
+
+                                                {% endfor %}
+                                            </div>                                            
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <!-- Botones para pantallas grandes (lg) y más grandes -->
+                                                <div class="form-group d-none d-lg-inline">
+                                                    <div class="d-flex justify-content-between">
+                                                        <button id="infoCuadrillaBtn" class="btn btn-primary mx-2" style="min-width: 220px;">Información Cuadrilla</button>
+                                                        <a type="button" href="{% url 'territorial_list' %}" class="btn btn-primary mx-2" style="min-width: 220px;">Volver</a>
+                                                    </div>
+                                                </div>
+                                                <!-- Botones para pantallas pequeñas (md) y más pequeñas -->
+                                                <div class="form-group d-lg-none mt-3 text-center">
+                                                    <button id="infoCuadrillaBtnSmall" class="btn btn-primary d-inline-block mx-2 mb-2" style="min-width: 170px;" type="button">Información Cuadrilla</button>
+                                                    <a class="btn btn-primary d-inline-block mx-2 mb-2" href="{% url 'territorial_list' %}" style="min-width: 170px;" type="button">Volver</a>
+                                                </div>
+                                            </div>
+                                        </div>                                                                                               
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+<!-- Llamada del footer -->
+{% include 'core/footer.html' %}
+            
+
+        </div>
+        
+
+    </div>
+
+
+
+
+    <div class="modal fade" id="crearCampoModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoModalLabel">Crear Nuevo Campo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nuevoCampo">Nombre del Nuevo Campo</label>
+                    <input type="text" class="form-control" id="nuevoCampo">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCampo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Función para mostrar la Sweet Alert con información de la cuadrilla
+        function mostrarInformacionCuadrilla() {
+            // Aquí puedes obtener la información de la cuadrilla y el tiempo en proceso
+            // Puedes usar datos dinámicos según tu lógica
+    
+            // Ejemplo de datos estáticos
+            const encargado = "Nombre del Encargado";
+            const tiempoProceso = "2 días"; // Puedes obtener esto dinámicamente
+    
+            // Construye el mensaje de la alerta
+            const mensaje = `
+                <p>Encargado de la Cuadrilla: ${encargado}</p>
+                <p>Tiempo en Proceso: ${tiempoProceso}</p>
+            `;
+    
+            // Muestra la Sweet Alert
+            Swal.fire({
+                title: 'Información de la Cuadrilla',
+                html: mensaje,
+                icon: 'info',
+                confirmButtonColor: '#134982',
+                confirmButtonText: 'Aceptar'
+            });
+        }
+    
+        // Asigna el evento de clic al botón para pantallas grandes
+        document.getElementById('infoCuadrillaBtn').addEventListener('click', mostrarInformacionCuadrilla);
+    
+        // Asigna el evento de clic al botón para pantallas pequeñas
+        document.getElementById('infoCuadrillaBtnSmall').addEventListener('click', mostrarInformacionCuadrilla);
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // Arreglo para almacenar los nombres de los campos creados
+            var camposCreados = [];
+    
+            // Función para agregar un nuevo campo a la sección de "Información personal"
+            function agregarCampo(nombreCampo) {
+                var nuevoCampoHTML = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>${nombreCampo}</label>
+                            <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field" style="display: none;"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                $(".informacion-personal-form").append(nuevoCampoHTML);
+            }
+    
+            // Evento al hacer clic en "Guardar" en la ventana modal
+            $("#guardarCampo").on("click", function() {
+                var nuevoCampoNombre = $("#nuevoCampo").val();
+                if (nuevoCampoNombre) {
+                    // Agregar el nuevo campo al arreglo y a la sección de "Información personal"
+                    camposCreados.push(nuevoCampoNombre);
+                    agregarCampo(nuevoCampoNombre);
+    
+                    // Limpiar el campo de texto y cerrar la ventana modal
+                    $("#nuevoCampo").val("");
+                    $("#crearCampoModal").modal("hide");
+                }
+            });
+    
+            // Evento al hacer clic en "Eliminar campo"
+            $(".informacion-personal-form").on("click", ".btn-delete-field", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+
+
+
+    <div class="modal fade" id="crearCampoIncidenteModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoIncidenteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoIncidenteModalLabel">Crear Nuevo Campo Incidente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nuevoCampoIncidente">Nombre del Nuevo Campo</label>
+                    <input type="text" class="form-control" id="nuevoCampoIncidente">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCampoIncidente">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            var camposIncidenteCreados = [];
+    
+            function agregarCampoIncidente(nombreCampoIncidente) {
+                var nuevoCampoIncidenteHTML = `
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>${nombreCampoIncidente}</label>
+                            <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="">
+                            </div>
+                        </div>
+                    </div>
+                `;
+    
+                camposIncidenteCreados.push(nombreCampoIncidente);
+                $(".informacion-incidente-form .row").append(nuevoCampoIncidenteHTML);
+    
+                $("#nuevoCampoIncidente").val("");
+                $("#crearCampoIncidenteModal").modal("hide");
+            }
+    
+            $("#guardarCampoIncidente").on("click", function() {
+                var nuevoCampoIncidenteNombre = $("#nuevoCampoIncidente").val();
+                if (nuevoCampoIncidenteNombre) {
+                    agregarCampoIncidente(nuevoCampoIncidenteNombre);
+                }
+            });
+    
+            $(".informacion-incidente-form").on("click", ".btn-delete-field", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+
+
+<script>
+    let map;
+    let marker;
+
+    function openMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 0, lng: 0 },
+            zoom: 15
+        });
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: true
+        });
+
+        // Abre la ventana de selección de ubicación
+        const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('locationInput'),
+            { placeIdOnly: true }
+        );
+
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                console.error("Ubicación no válida");
+                return;
+            }
+
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+
+            // Guarda la ubicación en el campo oculto
+            document.getElementById('selectedLocation').value = JSON.stringify({
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            });
+        });
+
+        // Muestra el modal con el mapa
+        $('#mapModal').modal('show');
+    }
+
+    $('#mapModal').on('hidden.bs.modal', function () {
+        google.maps.event.trigger(map, 'resize');
+    });
+</script>
+
+</body>
+
+</html>
+{% endblock %}

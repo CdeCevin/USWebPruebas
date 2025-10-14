@@ -1,0 +1,126 @@
+{% extends 'core/base_department.html' %}
+{% load static %}
+{% block content %}
+<div class="container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Perfil</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item active"><a href="{% url 'departamento_main' %}">Inicio</a></li>
+                    <li class="breadcrumb-item"><a>Ver Perfil</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method='post' action="{% url 'department_view_profile' %}" class="d-md-none">
+                        {% csrf_token %}
+                        <div class="col-12 mb-2">
+                            <label for="first_name_mobile">Nombre:</label>
+                            <input class="form-control" id="first_name_mobile" name="first_name"
+                                value="{{ user_data.first_name }}" required >
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label for="last_name_mobile">Apellido:</label>
+                            <input class="form-control" id="last_name_mobile" name="last_name"
+                                value="{{ user_data.last_name }}" required >
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label for="email_mobile">Correo:</label>
+                            <input type="email" class="form-control" id="email_mobile" name="email"
+                                value="{{ user_data.email }}" required />
+                        </div>
+                        <div class="col-12 mb-2">
+                            <label for="cargo_mobile">Cargo:</label>
+                            <input class="form-control" id="cargo_mobile" name="cargo"
+                                value="{{ user_data.groups.first.name }}" readonly >
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <a href="{% url 'department_main' %}" class="btn btn-secondary btn-block btn-md">Volver</a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <button type="submit" class="btn btn-primary btn-block btn-md">Guardar Cambios</button>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <button type="button" class="btn btn-primary btn-block btn-md" id="changePasswordBtn">Cambiar Contraseña</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <form method='post' action="{% url 'department_view_profile' %}" class="d-none d-md-block">
+                        {% csrf_token %}
+                        <div class="row mb-2">
+                            <div class="col-12 mb-2">
+                                <label for="first_name_desktop">Nombre:</label>
+                                <input class="form-control" id="first_name_desktop" name="first_name"
+                                    value="{{ user_data.first_name }}" required >
+                            </div>
+                            <div class="col-12 mb-2">
+                                <label for="last_name_desktop">Apellido:</label>
+                                <input class="form-control" id="last_name_desktop" name="last_name"
+                                    value="{{ user_data.last_name }}" required >
+                            </div>
+                            <div class="col-12 mb-2">
+                                <label for="email_desktop">Correo:</label>
+                                <input type="email" class="form-control" id="email_desktop" name="email"
+                                    value="{{ user_data.email }}" required />
+                            </div>
+                            {% if cargo %}
+                            <div class="col-12 mb-2">
+                                <label for="cargo_desktop">Cargo:</label>
+                                <input class="form-control" id="cargo_desktop" name="cargo"
+                                    value="{{ cargo }}" readonly>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4 mb-2">
+                                <a href="{% url 'department_main' %}" class="btn btn-secondary btn-block btn-md">Volver</a>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <button type="submit" class="btn btn-primary btn-block btn-md">Guardar Cambios</button>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <button type="button" class="btn btn-primary btn-block btn-md" id="changePasswordBtn">Cambiar Contraseña</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('changePasswordBtn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Cambiar Contraseña',
+                html: `
+                    <input type="password" id="currentPassword" class="swal2-input" placeholder="Contraseña Actual" required>
+                    <input type="password" id="newPassword" class="swal2-input" placeholder="Nueva Contraseña" required>
+                    <input type="password" id="confirmPassword" class="swal2-input" placeholder="Confirmar Nueva Contraseña" required>
+                `,
+                confirmButtonText: 'Cambiar Contraseña',
+                confirmButtonColor: '#134982',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const currentPassword = Swal.getPopup().querySelector('#currentPassword').value;
+                    const newPassword = Swal.getPopup().querySelector('#newPassword').value;
+                    const confirmPassword = Swal.getPopup().querySelector('#confirmPassword').value;
+    
+                    // Falta el metodo
+    
+                    return { currentPassword, newPassword, confirmPassword };
+                }
+            });
+        });
+    });
+    </script>
+{% endblock %}

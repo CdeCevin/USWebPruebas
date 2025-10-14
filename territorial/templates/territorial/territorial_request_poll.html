@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+{% extends 'core/base_territorial.html' %}
+{% load static %}
+{% block content %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <style>
+        .latitud-longitud {
+            display: none;
+        }
+    </style>
+ 
+    <script>
+        $(document).ready(function() {
+            $(".btn-delete-field").on("click", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+    <script async
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMqgH-fSoHt7wLbCU6j3b55Sq1tbhzreQ&libraries=places&callback=initMap">
+    </script>
+    <title>UrbanSensor</title>
+
+</head>
+
+
+
+<body id="page-top">
+                <!-- Encuesta -->
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Encuesta</h3>
+                                <ul class="breadcrumb">
+                                    <li class="breadcrumb-item active"><a href="{% url 'territorial_main' %}">Inicio</a></li>
+                                    <li class="breadcrumb-item"><a href="{% url 'territorial_list' %}">Solicitudes</a></li>
+                                    <li class="breadcrumb-item active">Responder Encuesta</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row justify-content-center">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="{% url 'territorial_request_save' %}" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}          
+                                        <input type="hidden" name="poll_id" value="{{poll_data.id}}">      
+                                        <div class="text-center">
+                                            <h4 class="card-title">{{poll_data.name}}</h4>
+                                        </div>
+                                        <br>         
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title">Información Personal</h4>
+                                        {% endif %}
+                                        <div class="text-center">
+                                            {% if 'name_neighbor' in poll_fields_standard_array %}
+                                                <div class="form-group">
+                                                    <label>Nombre vecino</label>
+                                                    <input type="text" class="form-control" name="name_neighbor" placeholder="Juan Pérez" required>
+                                                </div>
+                                            {% endif %}
+                                            {% if 'rut_neighbor' in poll_fields_standard_array %}                               
+                                                <div class="form-group">
+                                                    <label>Rut</label>
+                                                    <input type="tel" class="form-control" name="rut_neighbor" placeholder="12345678-9">
+                                                </div>  
+                                            {% endif %} 
+                                            {% if 'mail_neighbor' in poll_fields_standard_array %}
+                                                <div class="form-group">
+                                                    <label>Email</label>
+                                                    <input type="email" class="form-control" name="mail_neighbor" placeholder="correo@gmail.com" required>
+                                                </div>
+                                            {% endif %}
+                                            {% if 'pohne_neighbor' in poll_fields_standard_array %}                               
+                                                <div class="form-group">
+                                                    <label>Teléfono</label>
+                                                    <input type="tel" class="form-control" name="pohne_neighbor" placeholder="+569 12345678" pattern="['+'][569]{3} [0-9]{8}" title="Un número de teléfono válido debe tener +569 seguido de un espacio y ocho dígitos más">
+                                                </div>  
+                                            {% endif %}                                                                          
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Información Incidente</h4>
+                                        {% endif %}
+                                        <div class="text-center">
+                                            <!-- BB -->
+                                            <label>Ubicación</label>
+                                            <input type="text" class="form-control" id="search" required><br>
+                                            <div id="map">Mapa</div>
+                                            <p></p>
+                                            <div class="row latitud-longitud">
+                                                <div class="col-md-6">  
+                                                    <label>Latitud</label>
+                                                    <input type="text" class="form-control" id="incidence_latitud" name="incidence_latitud">
+                                                </div>
+                                                <div class="col-md-6">  
+                                                    <label>Longitud</label>
+                                                    <input type="text" class="form-control" id="incidence_longitud" name="incidence_longitud">
+                                                </div>
+                                            </div>                                            
+                                        </div>
+                                        <div class="text-center">
+                                            {% if 'incidence_priority' in poll_fields_standard_array %}                                       
+                                                <div class="form-group">
+                                                    <label>Prioridad</label>
+                                                    <select class="form-control" name="incidence_priority" required>
+                                                        <option value="">Selecione una opción</option>
+                                                        <option value="Alta">Alta</option>
+                                                        <option value="Media">Media</option>
+                                                        <option value="Baja">Baja</option>
+                                                    </select>
+                                                </div>
+                                            {% endif %} 
+                                            {% if 'incidence_description' in poll_fields_standard_array %} 
+                                                <div class="form-group">
+                                                    <label>Descripción</label>
+                                                    <textarea rows="8" cols="5" class="form-control" name="incidence_description" placeholder="Descripción"></textarea>
+                                                </div>
+                                            {% endif %}                                           
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Información Multimedia</h4>
+                                        {% endif %}                                            
+                                        {% if 'incidence_image' in poll_fields_standard_array %} 
+                                            <div class="form-group">
+                                                <label for="incidence_image" class="form-label">Imagen</label> 
+                                                <p id="imageFileCountText" class="text-muted mt-2"></p>
+                                                <small class="text-muted">Especificaciones: peso máximo 5 MB, tamaño máximo 1920x1080, formatos admitidos: JPG, PNG</small>
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control d-none" id='incidence_image' name='incidence_image' multiple accept="image/*" onchange="updateFileCount(this, 'imageFileCountText')">
+                                                    <label class="input-group-text btn btn-upload" for="incidence_image">
+                                                        <i class="far fa-file-image"></i> Seleccionar Imagen
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if 'incidence_video' in poll_fields_standard_array %}                               
+                                            <div class="form-group">
+                                                <label for="videoInput" class="form-label">Video</label>
+                                                <p id="videoFileCountText" class="text-muted mt-2"></p>
+                                                <small class="text-muted">Especificaciones: peso máximo 50 MB, duración máxima 10 minutos, formatos admitidos: MP4, AVI</small>
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control d-none" id="videoInput" name="incidence_video" accept="video/*" onchange="updateFileCount(this, 'videoFileCountText')">
+                                                    <label class="input-group-text btn btn-upload" for="videoInput">
+                                                        <i class="far fa-file-video"></i> Seleccionar Video
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if 'incidence_audio' in poll_fields_standard_array %} 
+                                            <div class="form-group">
+                                                <label for="audioInput" class="form-label">Audio</label>
+                                                <p id="audioFileCountText" class="text-muted mt-2"></p>
+                                                <small class="text-muted">Especificaciones: peso máximo 20 MB, duración máxima 5 minutos, formatos admitidos: MP3, WAV</small>
+                                                <div class="input-group">
+                                                    <input type="file" class="form-control d-none" id="audioInput" name="incidence_audio" accept="audio/*" onchange="updateFileCount(this, 'audioFileCountText')">
+                                                    <label class="input-group-text btn btn-upload" for="audioInput">
+                                                        <i class="far fa-file-audio"></i> Seleccionar Audio
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+
+                                        <script>
+                                            function updateFileCount(input, fileCountTextId) {
+                                                const fileCountText = document.getElementById(fileCountTextId);
+                                                if (input.files && input.files.length > 0) {
+                                                    fileCountText.innerText = `Archivos seleccionados: ${input.files.length}`;
+                                                } else {
+                                                    fileCountText.innerText = '';
+                                                }
+                                            }
+                                        </script>
+
+                                        </div>
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Información Adicional</h4>
+                                            <div class="text-center">
+                                                {% for o in poll_fields_other %}
+                                                        <div class="form-group">
+                                                            <label>{{o.label}}</label>
+                                                            <input type="text" class="form-control" name="{{o.name}}" placeholder="{{o.placeholder}}">
+                                                        </div>
+                                                {% endfor %}
+                                            </div>                                            
+                                        {% endif %}                                         
+                                        <div class="text-center">
+                                            <div class="form-group">
+                                                <div class="mt-4">
+                                                    <button type="submit" class="btn btn-primary">Enviar</button>
+                                                    <a href="{% url 'territorial_list' %}" class="btn btn-primary">Volver</a>
+                                                </div>
+                                            </div> 
+                                        </div>                                                               
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; UrbanSensor 2023</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+
+    </div>
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+    <div class="modal fade" id="crearCampoModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoModalLabel">Crear Nuevo Campo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{% url 'poll_add_field' poll_id=poll_data.id %}">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="input-container">
+                            <label for="nuevoCampo">
+                                Nombre del Nuevo Campo
+                                <i class='fas fa-exclamation-circle icon-tooltip'
+                                title="Si el rut es inválido, por favor bloquee este usuario y cree otro con un rut válido"></i>
+                            </label>
+                            <input type="text" class="form-control" name="nuevo_campo_nombre" id="nuevoCampo" 
+                                pattern="^[^\s]+$" title="No se permiten espacios en blanco">
+                        </div>
+                        <div><small id="campoError" class="text-danger"></small></div>
+
+                        
+                        <label for="labelCampo">Etiqueta del Campo</label>
+                        <input type="text" class="form-control" name="nuevo_campo_label" id="labelCampo">
+                    </div>
+                    
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary" id="guardarCampo">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+<!-- Agrega esta sección en tu HTML -->
+
+
+
+<script>
+$(document).ready(function() {
+    var camposCreados = [];
+
+    function agregarCampo(name, label, placeholder) {
+        var nuevoCampoHTML = `
+            <div class="form-group">
+                <label>${label}</label>
+                <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i></a>
+                <input type="text" class="form-control" name="${name}" placeholder="${placeholder}" value="">
+            </div>
+        `;
+        $(".informacion-personal-form").append(nuevoCampoHTML);
+    }
+
+    $("#guardarCampo").on("click", function() {
+        var nuevoCampoNombre = $("#nuevoCampo").val();
+        var nuevoCampoLabel = $("#labelCampo").val();
+        var nuevoCampoPlaceholder = $("#placeholderCampo").val();
+
+        if (nuevoCampoNombre && nuevoCampoLabel && nuevoCampoPlaceholder) {
+            camposCreados.push({
+                name: nuevoCampoNombre,
+                label: nuevoCampoLabel,
+                placeholder: nuevoCampoPlaceholder
+            });
+            agregarCampo(nuevoCampoNombre, nuevoCampoLabel, nuevoCampoPlaceholder);
+
+            $("#nuevoCampo").val("");
+            $("#labelCampo").val("");
+            $("#placeholderCampo").val("");
+
+            $.post(
+                "{% url 'poll_edit' poll_id=poll_data.id %}",
+                {
+                    nuevo_campo_nombre: nuevoCampoNombre,
+                    nuevo_campo_label: nuevoCampoLabel,
+                    nuevo_campo_placeholder: nuevoCampoPlaceholder,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+                },
+                function(data) {
+                    // Manejar la respuesta del servidor si es necesario
+                }
+            );
+
+            $("#crearCampoModal").modal("hide");
+        }
+    });
+
+    $(".informacion-personal-form").on("click", ".btn-delete-field", function() {
+        $(this).closest(".form-group").remove();
+    });
+});
+</script>
+
+<script>
+    let map;
+
+function initMap() {
+
+//Se crea el mapa con las coordenadas de la Municipalidad de San Miguel
+map = new google.maps.Map(document.getElementById("map"), {
+    center: { lat: -33.485708610189306, lng: -70.64957863250334 },
+    zoom: 15,
+});
+//Creacion del elemento search para la busqueda y actualizacion del mapa
+search= new google.maps.places.Autocomplete(document.getElementById("search"))
+
+search.addListener('place_changed', function(a){
+    place = search.getPlace();
+    coords = new google.maps.LatLng(place.geometry.location)
+    if (place.geometry.viewport){
+        map.fitBounds(place.geometry.viewport)
+        map.setZoom(18)
+    }else{
+        map.setCenter(place.geometry.location)
+        map.setZoom(18)
+        
+    }
+    marcador = new google.maps.Marker({
+        map: map,
+    })
+    marcador.setPosition(place.geometry.location)
+    var lat = coords.lat;
+    var lng = coords.lng;
+    $('#incidence_latitud').val(lat);
+    $('#incidence_longitud').val(lng);
+    
+})
+
+}
+</script>
+
+<script>
+const maxFiles = 5;
+    document.querySelector('#incidence_image').addEventListener('change', function() {
+    if (this.files.length > maxFiles) {
+        this.value = '';
+        alert(`No se pueden subir mas de ${maxFiles} archivos.`);
+    }
+});
+</script>
+
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+{% extends 'core/base_admin.html' %}
+{%load static %}
+{% block content %}
+<html lang="es">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title>UrbanSensor</title>
+
+
+
+
+</head>
+
+
+<body id="page-top">
+
+
+        
+                <!-- Encuesta -->
+                <div class="content container-fluid">
+                    <div class="page-header">
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <h3 class="page-title">Encuesta</h3>
+                                <ul class="breadcrumb">
+                                <li class="breadcrumb-item active"><a href="{% url 'dashboard_admin' %}">Inicio</a></li>
+                                <li class="breadcrumb-item"><a href="{% url 'poll_main' %}">Encuestas</a></li>
+                                <li class="breadcrumb-item active">Ver Encuesta</li>
+                            </ul>
+                            </div>
+                        </div>
+                    </div>                    
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <form action="{% url 'poll_add_end' %}" method="post">
+                                        {% csrf_token %}          
+                                        <input type="hidden" name="poll_id" value="{{poll_data.id}}">      
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Título</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.name}}" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h4 class="card-title ">Tipo Incidencia</h4>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" name="poll_name" value="{{poll_data.incident}}" disabled>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <br>         
+                                        {% if 'name_neighbor' in poll_fields_standard_array or 'mail_neighbor' in poll_fields_standard_array or 'pohne_neighbor' in poll_fields_standard_array %}               
+                                            <h4 class="card-title ">Información Personal</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'name_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Nombre Vecino</label>                                                        
+                                                        <input type="text" class="form-control" name="name_neighbor" value="Juan Perez" disabled>
+                                                    </div>
+                                                {% endif %}
+                                                {% if 'mail_neighbor' in poll_fields_standard_array %}
+                                                    <div class="form-group">
+                                                        <label>Email</label>
+                                                        <input type="email" class="form-control" name="mail_neighbor" value="correo@gmail.com" disabled>
+                                                    </div>
+                                                {% endif %}                                        
+                                            </div>
+                                            <div class="col-md-6">    
+                                                {% if 'rut_neighbor' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Rut</label>                                                        
+                                                        <input type="text" class="form-control" name="rut_neighbor" value="11111111-1" disabled/>
+                                                    </div>  
+                                                {% endif %} 
+                                                {% if 'pohne_neighbor' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Teléfono</label>
+                                                        <input type="text" class="form-control" name="pohne_neighbor" value="+569 12349876" disabled>
+                                                    </div>  
+                                                {% endif %}                                                                          
+                                            </div>
+                                        </div> 
+                                        {% if 'incidence_classification' in poll_fields_standard_array or 'incidence_priority' in poll_fields_standard_array or 'incidence_description' in poll_fields_standard_array %}
+                                            <h4 class="card-title mt-4">Información Incidente</h4>
+                                        {% endif %}
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_classification' in poll_fields_standard_array %}   
+                                                    <div class="form-group">
+                                                        <label>Clasificación incidencia</label>
+                                                        <input type="text" class="form-control" name="incidence_classification" value="Clasificación incidencia" disabled>
+                                                    </div>
+                                                {% endif %}     
+                                                {% if 'incidence_priority' in poll_fields_standard_array %}                                       
+                                                    <div class="form-group">
+                                                        <label>Prioridad</label>
+                                                        <input type="text" class="form-control" name="incidence_priority" value="Prioridad" disabled>
+                                                    </div>
+                                                {% endif %}                                          
+                                                <div class="form-group">
+                                                    <label>Ubicación</label>
+                                                    <input type="text" class="form-control" name="incidence_location" value="Ubicación" disabled>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                {% if 'incidence_description' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Descripción</label>
+                                                        <textarea rows="8" cols="5" class="form-control" name="incidence_description" placeholder="Descripción" disabled></textarea>
+                                                    </div>
+                                                {% endif %}                                           
+                                            </div>
+                                        </div>
+                                        {% if 'incidence_image' in poll_fields_standard_array or 'incidence_video' in poll_fields_standard_array or 'incidence_audio' in poll_fields_standard_array%}
+                                            <h4 class="card-title mt-4">Información Multimedia</h4>
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_image' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Imagen</label>
+                                                        <input type="text" class="form-control" name="incidence_image" value="imagen" disabled>
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                            <div class="col-md-6">      
+                                                {% if 'incidence_video' in poll_fields_standard_array %}                               
+                                                    <div class="form-group">
+                                                        <label>Video</label>
+                                                        <input type="text" class="form-control" name="incidence_video" value="video" disabled>
+                                                    </div>
+                                                {% endif %}                                         
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {% if 'incidence_audio' in poll_fields_standard_array %} 
+                                                    <div class="form-group">
+                                                        <label>Audio</label>
+                                                        <input type="text" class="form-control" name="incidence_audio" value="Audio" disabled>
+                                                    </div>
+                                                {% endif %}                                             
+                                            </div>
+                                        </div>  
+                                        {% if poll_fields_other|length > 0 %} 
+                                            <h4 class="card-title mt-4">Otra</h4>
+                                            <div class="row">
+                                                {% for o in poll_fields_other %}
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <label>{{o.label}}</label>
+                                                                <input type="text" class="form-control" name="{{o.name}}" value="{{o.placeholder}}" disabled>
+                                                            </div>
+                                                        </div>
+
+                                                {% endfor %}
+                                            </div>                                            
+                                        {% endif %}                                            
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <!-- Botón para pantallas grandes (lg) y más grandes -->
+                                                <div class="form-group d-none d-lg-inline">
+                                                    <div class="text-end mt-4">
+                                                        <a href="{% url 'poll_main' %}" style="min-width: 220px;" class="btn btn-primary">Volver</a>
+                                                    </div>
+                                                </div>
+                                        
+                                                <!-- Botón para pantallas pequeñas (md) y más pequeñas -->
+                                                <div class="form-group d-lg-none mt-4 text-center">
+                                                    <a href="{% url 'poll_main' %}" class="btn btn-primary d-inline-block mx-2" style="min-width: 220px;">Volver</a>
+                                                </div>
+                                            </div>
+                                        </div>                                                                                                      
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+
+            <!-- Footer -->
+            <footer class="sticky-footer bg-white">
+                <div class="container my-auto">
+                    <div class="copyright text-center my-auto">
+                        <span>Copyright &copy; UrbanSensor 2023</span>
+                    </div>
+                </div>
+            </footer>
+            
+
+        </div>
+        
+
+    </div>
+
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+
+
+
+
+
+    <div class="modal fade" id="crearCampoModal" tabindex="-1" role="dialog" aria-labelledby="crearCampoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="crearCampoModalLabel">Crear Nuevo Campo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="nuevoCampo">Nombre del Nuevo Campo</label>
+                    <input type="text" class="form-control" id="nuevoCampo">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="guardarCampo">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+
+
+
+    <script>
+        $(document).ready(function() {
+            var camposIncidenteCreados = [];
+    
+            function agregarCampoIncidente(nombreCampoIncidente) {
+                var nuevoCampoIncidenteHTML = `
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>${nombreCampoIncidente}</label>
+                            <a href="javascript:void(0);" class="btn btn-sm btn-white text-danger me-2 btn-delete-field"><i class="far fa-trash-alt me-1"></i>Eliminar campo</a>
+                            <div class="form-group">
+                                <input type="text" class="form-control" value="">
+                            </div>
+                        </div>
+                    </div>
+                `;
+    
+                camposIncidenteCreados.push(nombreCampoIncidente);
+                $(".informacion-incidente-form .row").append(nuevoCampoIncidenteHTML);
+    
+                $("#nuevoCampoIncidente").val("");
+                $("#crearCampoIncidenteModal").modal("hide");
+            }
+    
+            $("#guardarCampoIncidente").on("click", function() {
+                var nuevoCampoIncidenteNombre = $("#nuevoCampoIncidente").val();
+                if (nuevoCampoIncidenteNombre) {
+                    agregarCampoIncidente(nuevoCampoIncidenteNombre);
+                }
+            });
+    
+            $(".informacion-incidente-form").on("click", ".btn-delete-field", function() {
+                $(this).closest(".form-group").remove();
+            });
+        });
+    </script>
+
+
+<script>
+    let map;
+    let marker;
+
+    function openMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 0, lng: 0 },
+            zoom: 15
+        });
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: true
+        });
+
+        // Abre la ventana de selección de ubicación
+        const autocomplete = new google.maps.places.Autocomplete(
+            document.getElementById('locationInput'),
+            { placeIdOnly: true }
+        );
+
+        autocomplete.addListener('place_changed', function () {
+            const place = autocomplete.getPlace();
+            if (!place.geometry) {
+                console.error("Ubicación no válida");
+                return;
+            }
+
+            map.setCenter(place.geometry.location);
+            marker.setPosition(place.geometry.location);
+
+            // Guarda la ubicación en el campo oculto
+            document.getElementById('selectedLocation').value = JSON.stringify({
+                lat: place.geometry.location.lat(),
+                lng: place.geometry.location.lng()
+            });
+        });
+
+        // Muestra el modal con el mapa
+        $('#mapModal').modal('show');
+    }
+
+    $('#mapModal').on('hidden.bs.modal', function () {
+        google.maps.event.trigger(map, 'resize');
+    });
+</script>
+
+</body>
+
+</html>
+
+{% endblock %}
